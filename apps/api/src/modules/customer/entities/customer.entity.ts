@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { BuildingSpot } from '../../bs/entities/bs.entity';
+import { Invoice } from '../../invoice/entities/invoice.entity';
 
 @Entity('customer')
 export class Customer {
@@ -50,5 +51,8 @@ export class Customer {
     })
     @JoinColumn({ name: 'bs_id' })
     bs: BuildingSpot;
+
+    @OneToMany(() => Invoice, (invoice) => invoice.customer)
+    invoices: Invoice[];
 
 }

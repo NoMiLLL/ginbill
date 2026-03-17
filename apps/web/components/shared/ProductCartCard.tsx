@@ -111,6 +111,11 @@ export default function ProductCartCard() {
     };
   }, []);
 
+  const [isEmitting, setIsEmitting] = useState(false);
+  const [emissionSuccess, setEmissionSuccess] = useState("");
+  const [emissionError, setEmissionError] = useState("");
+
+  // Definimos primero las variables calculadas y funciones de ajuste
   const selectedProducts = useMemo(
     () => products.filter((product) => (quantities[product.id] ?? 0) > 0),
     [products, quantities]
@@ -136,6 +141,42 @@ export default function ProductCartCard() {
     });
   };
 
+  const handleEmitInvoice = async () => {
+    if (!selectedCustomerId || total === 0) return;
+
+    setIsEmitting(true);
+    setEmissionError("");
+    setEmissionSuccess("");
+
+    const description = selectedProducts
+      .map((p) => `${quantities[p.id]}x ${p.name}`)
+      .join(", ");
+
+    try {
+      const response = await fetchWithAuth("http://localhost:4000/invoice", {
+        method: "POST",
+        body: JSON.stringify({
+          total,
+          customerId: Number(selectedCustomerId),
+          description,
+        }),
+      });
+
+      if (response.ok) {
+        setEmissionSuccess("Factura emitida exitosamente.");
+        setQuantities({});
+        setSelectedCustomerId("");
+      } else {
+        setEmissionError("Error al emitir la factura. Intenta nuevamente.");
+      }
+    } catch (error) {
+      console.error("Failed to emit invoice", error);
+      setEmissionError("Error de conexión al emitir la factura.");
+    } finally {
+      setIsEmitting(false);
+    }
+  };
+
   return (
     <Card className="w-full border-foreground/10 bg-card/80 shadow-lg backdrop-blur">
       <CardHeader className="gap-2">
@@ -152,8 +193,12 @@ export default function ProductCartCard() {
             </p>
             <Select
               value={selectedCustomerId}
-              onValueChange={(value) => setSelectedCustomerId(value)}
-              disabled={isLoadingCustomers || customersError}
+              onValueChange={(value) => {
+                setSelectedCustomerId(value);
+                setEmissionSuccess("");
+                setEmissionError("");
+              }}
+              disabled={isLoadingCustomers || customersError || isEmitting}
             >
               <SelectTrigger className="w-full">
                 <SelectValue
@@ -224,7 +269,7 @@ export default function ProductCartCard() {
                           variant="outline"
                           size="icon-xs"
                           onClick={() => adjustQuantity(product.id, -1)}
-                          disabled={quantity === 0 || !selectedCustomerId}
+                          disabled={quantity === 0 || !selectedCustomerId || isEmitting}
                           aria-label={`Quitar ${product.name}`}
                         >
                           -
@@ -237,7 +282,7 @@ export default function ProductCartCard() {
                           variant="outline"
                           size="icon-xs"
                           onClick={() => adjustQuantity(product.id, 1)}
-                          disabled={!selectedCustomerId}
+                          disabled={!selectedCustomerId || isEmitting}
                           aria-label={`Agregar ${product.name}`}
                         >
                           +
@@ -289,11 +334,30 @@ export default function ProductCartCard() {
               })
             )}
           </div>
-          <div className="mt-4 flex items-center justify-between border-t border-foreground/10 pt-4">
-            <span className="text-sm font-semibold text-foreground">Total</span>
-            <span className="text-lg font-bold text-foreground">
-              {currency.format(total)}
-            </span>
+
+          {(emissionSuccess || emissionError) && (
+            <div className={`mt-4 rounded-lg p-3 text-sm font-medium ${
+              emissionSuccess ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive"
+            }`}>
+              {emissionSuccess || emissionError}
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-col gap-4 border-t border-foreground/10 pt-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-foreground">Total</span>
+              <span className="text-lg font-bold text-foreground">
+                {currency.format(total)}
+              </span>
+            </div>
+            <Button 
+              className="w-full" 
+              size="lg"
+              disabled={!selectedCustomerId || total === 0 || isEmitting}
+              onClick={handleEmitInvoice}
+            >
+              {isEmitting ? "Procesando..." : "Emitir Factura"}
+            </Button>
           </div>
         </section>
       </CardContent>

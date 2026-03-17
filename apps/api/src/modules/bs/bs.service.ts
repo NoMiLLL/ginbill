@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcryptjs from 'bcryptjs';
 import { CreateBsDto } from './dto/create-bs.dto';
 import { UpdateBsDto } from './dto/update-bs.dto';
 import { BuildingSpot } from './entities/bs.entity';
@@ -19,7 +20,13 @@ export class BsService {
 
   async create(createBsDto: CreateBsDto) {
     try {
-      const entity = this.buildingSpotRepository.create(createBsDto);
+      const { password, ...data } = createBsDto;
+      const hashedPassword = await bcryptjs.hash(password, 10);
+      
+      const entity = this.buildingSpotRepository.create({
+        ...data,
+        password: hashedPassword,
+      });
       return await this.buildingSpotRepository.save(entity);
     } catch (error: any) {
       if (error.code === '23505') {
@@ -81,7 +88,14 @@ export class BsService {
         throw new NotFoundException('Building spot not found');
       }
 
-      const replaced = this.buildingSpotRepository.create({ id, ...updateBsDto });
+      const { password, ...data } = updateBsDto;
+      const payload: any = { ...data, id };
+      
+      if (password) {
+        payload.password = await bcryptjs.hash(password, 10);
+      }
+
+      const replaced = this.buildingSpotRepository.create(payload);
       return await this.buildingSpotRepository.save(replaced);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -100,7 +114,13 @@ export class BsService {
         throw new NotFoundException('Building spot not found');
       }
 
-      const updated = this.buildingSpotRepository.merge(existing, updateBsDto);
+      const { password, ...data } = updateBsDto;
+      const updated = this.buildingSpotRepository.merge(existing, data);
+
+      if (password) {
+        updated.password = await bcryptjs.hash(password, 10);
+      }
+
       return await this.buildingSpotRepository.save(updated);
     } catch (error) {
       if (error instanceof NotFoundException) {

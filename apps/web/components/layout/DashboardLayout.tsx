@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Users, Package, LayoutDashboard, LogOut } from "lucide-react";
+import { Users, Package, LayoutDashboard, LogOut, Settings, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { jwtDecode } from "jwt-decode";
 
@@ -73,6 +73,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       href: "/dashboard/products",
       icon: <Package className="h-5 w-5" />,
       isActive: (path: string) => path.startsWith("/dashboard/products"),
+    },
+    {
+      title: "Facturas",
+      href: "/dashboard/invoices",
+      icon: <FileText className="h-5 w-5" />,
+      isActive: (path: string) => path.startsWith("/dashboard/invoices"),
+    },
+    {
+      title: "Configuración",
+      href: "/dashboard/settings",
+      icon: <Settings className="h-5 w-5" />,
+      isActive: (path: string) => path.startsWith("/dashboard/settings"),
     },
   ];
 
