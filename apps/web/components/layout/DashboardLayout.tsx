@@ -58,32 +58,32 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     {
       title: "Inicio",
       href: "/dashboard",
-      icon: <LayoutDashboard className="h-5 w-5" />,
+      icon: <LayoutDashboard className="h-5 w-5" strokeWidth={1.5} />,
       // Consider exact match for dashboard home to avoid highlighting it when on subpages
       isActive: (path: string) => path === "/dashboard",
     },
     {
-      title: "Administrar Clientes",
+      title: "Clientes",
       href: "/dashboard/customers",
-      icon: <Users className="h-5 w-5" />,
+      icon: <Users className="h-5 w-5" strokeWidth={1.5} />,
       isActive: (path: string) => path.startsWith("/dashboard/customers"),
     },
     {
-      title: "Administrar Productos",
+      title: "Productos",
       href: "/dashboard/products",
-      icon: <Package className="h-5 w-5" />,
+      icon: <Package className="h-5 w-5" strokeWidth={1.5} />,
       isActive: (path: string) => path.startsWith("/dashboard/products"),
     },
     {
       title: "Facturas",
       href: "/dashboard/invoices",
-      icon: <FileText className="h-5 w-5" />,
+      icon: <FileText className="h-5 w-5" strokeWidth={1.5} />,
       isActive: (path: string) => path.startsWith("/dashboard/invoices"),
     },
     {
       title: "Configuración",
       href: "/dashboard/settings",
-      icon: <Settings className="h-5 w-5" />,
+      icon: <Settings className="h-5 w-5" strokeWidth={1.5} />,
       isActive: (path: string) => path.startsWith("/dashboard/settings"),
     },
   ];
@@ -99,10 +99,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="flex h-screen bg-muted/20">
       {/* Sidebar / Navigation Drawer */}
-      <aside className="w-64 flex-shrink-0 bg-background border-r flex flex-col transition-all duration-300">
-        <div className="h-16 flex items-center px-6 border-b">
-          <h1 className="text-xl font-bold tracking-tight">
-            Bill<span className="text-primary">gin</span>
+      <aside className="w-64 flex-shrink-0 bg-[#1E293B] flex flex-col transition-all duration-300">
+        <div className="h-16 flex items-center px-6 border-b border-[#334155]">
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            Bill<span className="text-[#1F7AE0]">gin</span>
           </h1>
         </div>
         
@@ -113,26 +113,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative ${
                   active 
-                    ? "bg-primary text-primary-foreground font-medium" 
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-[#1F7AE0]/10 text-white font-medium" 
+                    : "text-slate-400 hover:bg-[#334155]/50 hover:text-white"
                 }`}
               >
-                {item.icon}
+                {active && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#1F7AE0] rounded-r-sm" />
+                )}
+                <div className="flex items-center justify-center">
+                  {item.icon}
+                </div>
                 <span>{item.title}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-[#334155]">
           <Button 
             variant="ghost" 
-            className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            className="w-full justify-start gap-3 text-slate-400 hover:text-white hover:bg-[#334155]/50 rounded-lg h-11"
             onClick={handleLogout}
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-5 w-5" strokeWidth={1.5} />
             Cerrar Sesión
           </Button>
         </div>

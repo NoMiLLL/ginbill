@@ -78,84 +78,92 @@ export default function InvoicesPage() {
         </div>
       </div>
 
-      <div className="bg-card border rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b bg-muted/40 flex flex-col md:flex-row gap-4">
-          <div className="flex-1 flex items-center gap-2 bg-background rounded-md px-3 border focus-within:ring-1 focus-within:ring-primary">
-            <Search className="h-4 w-4 text-muted-foreground" />
+      <div className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border/50 bg-[#F8FAFC] flex flex-col md:flex-row items-center gap-4 justify-between">
+          <div className="relative max-w-[400px] w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
             <Input 
               placeholder="Buscar por cliente o identificación..." 
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-9"
+              className="pl-9 h-10 w-full border-border/50 rounded-lg focus-visible:ring-1 focus-visible:ring-primary"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="w-full md:w-64 flex items-center gap-2 bg-background rounded-md px-3 border focus-within:ring-1 focus-within:ring-primary">
-            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            <input 
-              type="date"
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-9 text-sm w-full outline-none"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-            />
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative w-full md:w-48">
+              <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+              <input 
+                type="date"
+                className="pl-9 h-10 w-full rounded-lg border border-border/50 bg-white text-sm focus:outline-none focus:ring-1 focus:ring-primary text-[#1E293B]"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+              />
+            </div>
+            { (search || dateFilter) && (
+              <Button 
+                variant="ghost" 
+                onClick={() => { setSearch(""); setDateFilter(""); }}
+                className="text-xs h-10 rounded-lg text-[#64748B] hover:text-[#1E293B]"
+              >
+                Limpiar filtros
+              </Button>
+            )}
           </div>
-          { (search || dateFilter) && (
-            <Button 
-              variant="ghost" 
-              onClick={() => { setSearch(""); setDateFilter(""); }}
-              className="text-xs h-9"
-            >
-              Limpiar filtros
-            </Button>
-          )}
         </div>
         
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/20">
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Descripción</TableHead>
-              <TableHead className="text-right">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  Cargando facturas...
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-border/50">
+                <TableHead className="w-[100px] font-semibold text-[#64748B]">Factura</TableHead>
+                <TableHead className="font-semibold text-[#64748B]">Fecha</TableHead>
+                <TableHead className="font-semibold text-[#64748B]">Cliente</TableHead>
+                <TableHead className="font-semibold text-[#64748B]">Descripción</TableHead>
+                <TableHead className="text-right font-semibold text-[#64748B]">Monto</TableHead>
               </TableRow>
-            ) : filteredInvoices.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                  No se encontraron facturas con los filtros aplicados.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredInvoices.map((invoice) => (
-                <TableRow key={invoice.id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="font-mono text-xs text-muted-foreground">#{invoice.id}</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {new Date(invoice.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{invoice.customer.names}</span>
-                      <span className="text-xs text-muted-foreground">{invoice.customer.identification}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-[300px] truncate" title={invoice.description}>
-                    {invoice.description}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-primary">
-                    {currency.format(invoice.total)}
+            </TableHeader>
+            <TableBody className="divide-y divide-border/50">
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                    Cargando facturas...
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filteredInvoices.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                    No se encontraron facturas con los filtros aplicados.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredInvoices.map((invoice, index) => {
+                  return (
+                  <TableRow 
+                    key={invoice.id} 
+                    className={`group transition-colors border-none ${index % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'} hover:bg-muted/50`}
+                  >
+                    <TableCell className="font-medium text-[#1E293B]">#INV-{invoice.id.toString().padStart(4, '0')}</TableCell>
+                    <TableCell className="text-[#64748B] whitespace-nowrap">
+                      {new Date(invoice.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-[#1E293B]">{invoice.customer.names}</span>
+                        <span className="text-xs text-[#64748B]">{invoice.customer.identification}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[300px] truncate text-[#64748B]" title={invoice.description}>
+                      {invoice.description}
+                    </TableCell>
+                    <TableCell className="text-right font-semibold text-[#1E293B]">
+                      {currency.format(invoice.total)}
+                    </TableCell>
+                  </TableRow>
+                )})
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
