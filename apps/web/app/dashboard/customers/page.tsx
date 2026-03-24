@@ -174,20 +174,20 @@ export default function CustomersPage() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 mt-2">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#1E293B]">Clientes</h1>
-          <p className="text-muted-foreground text-sm">Gestiona tu base de datos de clientes para la facturación.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#333333]">Clientes</h1>
+          <p className="text-[#666666] text-sm mt-1">Gestiona tu base de datos de clientes para la facturación.</p>
         </div>
         <Link href="/dashboard/customers/new">
-          <Button className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm rounded-lg">
-            <Plus className="h-4 w-4" />
+          <Button className="gap-2 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 rounded-2xl h-12 px-6 transition-all">
+            <Plus className="h-5 w-5" strokeWidth={2} />
             Nuevo Cliente
           </Button>
         </Link>
       </div>
 
-      <div className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden">
+      <div className="neo-glass rounded-[2rem] overflow-hidden flex flex-col mt-4">
         {(actionError || actionSuccess) && (
           <div className="border-b border-border/50 bg-[#F8FAFC] px-4 py-3 text-sm">
             {actionError && (
@@ -198,12 +198,12 @@ export default function CustomersPage() {
             )}
           </div>
         )}
-        <div className="p-4 border-b border-border/50 flex items-center justify-between">
-          <div className="relative max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+        <div className="p-8 border-b border-white/20 flex items-center justify-between">
+          <div className="relative max-w-md w-full neo-pressed rounded-2xl flex items-center h-12 px-4 shadow-sm">
+            <Search className="h-5 w-5 text-[#666666]" strokeWidth={2} />
             <Input 
               placeholder="Buscar cliente..." 
-              className="pl-9 h-10 w-full max-w-[400px] border-border/50 rounded-lg focus-visible:ring-1 focus-visible:ring-primary"
+              className="border-none bg-transparent h-full w-full focus-visible:ring-0 text-[#333333] placeholder:text-[#666666]"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -213,24 +213,24 @@ export default function CustomersPage() {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#F8FAFC] hover:bg-[#F8FAFC] border-b border-border/50">
-                <TableHead className="font-semibold text-[#64748B]">Identificación</TableHead>
-                <TableHead className="font-semibold text-[#64748B]">Nombre / Razón Social</TableHead>
-                <TableHead className="font-semibold text-[#64748B]">Correo</TableHead>
-                <TableHead className="font-semibold text-[#64748B]">Teléfono</TableHead>
-                <TableHead className="text-right font-semibold text-[#64748B]">Acciones</TableHead>
+              <TableRow className="border-b border-white/20 hover:bg-transparent">
+                <TableHead className="px-8 py-5 font-semibold text-[#666666] uppercase text-xs tracking-wider">Identificación</TableHead>
+                <TableHead className="px-8 py-5 font-semibold text-[#666666] uppercase text-xs tracking-wider">Nombre / Razón Social</TableHead>
+                <TableHead className="px-8 py-5 font-semibold text-[#666666] uppercase text-xs tracking-wider">Correo</TableHead>
+                <TableHead className="px-8 py-5 font-semibold text-[#666666] uppercase text-xs tracking-wider">Teléfono</TableHead>
+                <TableHead className="px-8 py-5 text-right font-semibold text-[#666666] uppercase text-xs tracking-wider">Acciones</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="divide-y divide-border/50">
+            <TableBody className="divide-y divide-white/10">
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="h-32 text-center text-[#666666] font-medium">
                     Cargando clientes...
                   </TableCell>
                 </TableRow>
               ) : filteredCustomers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="h-32 text-center text-[#666666] font-medium">
                     No se encontraron clientes.
                   </TableCell>
                 </TableRow>
@@ -238,37 +238,37 @@ export default function CustomersPage() {
                 filteredCustomers.map((customer, index) => (
                   <TableRow 
                     key={customer.id} 
-                    className={`group transition-colors border-none ${index % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'} hover:bg-muted/50`}
+                    className="group transition-all duration-300 border-none hover:neo-surface hover:rounded-2xl hover:scale-[1.01]"
                   >
-                    <TableCell className="font-medium text-[#1E293B]">{customer.identification}</TableCell>
-                    <TableCell className="text-[#64748B]">{customer.names}</TableCell>
-                    <TableCell className="text-[#64748B]">{customer.email}</TableCell>
-                    <TableCell className="text-[#64748B]">{customer.phone}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <TableCell className="px-8 py-5 font-medium text-[#333333] transition-transform group-hover:pl-10">{customer.identification}</TableCell>
+                    <TableCell className="px-8 py-5 text-[#666666] group-hover:text-[#333333] transition-colors">{customer.names}</TableCell>
+                    <TableCell className="px-8 py-5 text-[#666666]">{customer.email}</TableCell>
+                    <TableCell className="px-8 py-5 text-[#666666]">{customer.phone}</TableCell>
+                    <TableCell className="px-8 py-5 text-right transition-transform group-hover:pr-10">
+                      <div className="flex items-center justify-end gap-2">
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8 text-[#64748B] hover:text-[#1F7AE0] hover:bg-[#1F7AE0]/10 rounded-md"
+                          className="h-10 w-10 text-[#666666] hover:text-[#1F7AE0] hover:neo-pressed-sm rounded-xl transition-all"
                           onClick={() => {}}
                         >
-                          <Eye className="h-4 w-4" strokeWidth={1.5} />
+                          <Eye className="h-5 w-5" strokeWidth={2} />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8 text-[#1F7AE0] hover:bg-[#1F7AE0]/10 rounded-md"
+                          className="h-10 w-10 text-[#1F7AE0] hover:neo-pressed-sm rounded-xl transition-all"
                           onClick={() => openEdit(customer)}
                         >
-                          <Edit2 className="h-4 w-4" strokeWidth={1.5} />
+                          <Edit2 className="h-5 w-5" strokeWidth={2} />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8 text-[#991B1B] hover:text-[#991B1B] hover:bg-[#FEE2E2] rounded-md"
+                          className="h-10 w-10 text-[#991B1B] hover:text-[#991B1B] hover:neo-pressed-sm rounded-xl transition-all"
                           onClick={() => setDeleteTarget(customer)}
                         >
-                          <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+                          <Trash2 className="h-5 w-5" strokeWidth={2} />
                         </Button>
                       </div>
                     </TableCell>
@@ -281,19 +281,19 @@ export default function CustomersPage() {
       </div>
 
       {editCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-xl border border-border/50">
-            <div className="mb-4">
-              <h2 className="text-lg font-bold text-[#1E293B]">Editar Cliente</h2>
-              <p className="text-sm text-muted-foreground">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/20 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-[2rem] neo-glass p-8 shadow-2xl">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-[#333333]">Editar Cliente</h2>
+              <p className="text-[#666666] mt-1">
                 Actualiza la información del cliente y guarda los cambios.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1E293B]">Identificación</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Identificación</label>
                 <Input
-                  className="rounded-lg h-10 border-border/50"
+                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.identification}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, identification: event.target.value }))
@@ -301,9 +301,9 @@ export default function CustomersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1E293B]">Nombre / Razón Social</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Nombre / Razón Social</label>
                 <Input
-                  className="rounded-lg h-10 border-border/50"
+                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.names}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, names: event.target.value }))
@@ -311,10 +311,10 @@ export default function CustomersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1E293B]">Correo</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Correo</label>
                 <Input
                   type="email"
-                  className="rounded-lg h-10 border-border/50"
+                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.email}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, email: event.target.value }))
@@ -322,9 +322,9 @@ export default function CustomersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#1E293B]">Teléfono</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Teléfono</label>
                 <Input
-                  className="rounded-lg h-10 border-border/50"
+                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.phone}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, phone: event.target.value }))
@@ -332,9 +332,9 @@ export default function CustomersPage() {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-[#1E293B]">Dirección</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Dirección</label>
                 <Input
-                  className="rounded-lg h-10 border-border/50"
+                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.address}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, address: event.target.value }))
@@ -342,19 +342,19 @@ export default function CustomersPage() {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-[#1E293B]">Municipio</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Municipio</label>
                 <Select
                   value={editValues.municipalityId}
                   onValueChange={(value) =>
                     setEditValues((prev) => ({ ...prev, municipalityId: value }))
                   }
                 >
-                  <SelectTrigger className="w-full rounded-lg h-10 border-border/50">
+                  <SelectTrigger className="w-full rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus:ring-0 text-[#333333]">
                     <SelectValue placeholder="Selecciona una ciudad..." />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-2xl border-none neo-glass">
                     {MUNICIPALITIES.map((mun) => (
-                      <SelectItem key={mun.id} value={mun.id.toString()}>
+                      <SelectItem key={mun.id} value={mun.id.toString()} className="focus:bg-[#E0E0E0]/50 rounded-xl cursor-pointer">
                         {mun.name}
                       </SelectItem>
                     ))}
@@ -362,11 +362,11 @@ export default function CustomersPage() {
                 </Select>
               </div>
             </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="ghost" type="button" onClick={() => setEditCustomer(null)} className="rounded-lg text-[#64748B] hover:text-[#1E293B]">
+            <div className="mt-8 flex justify-end gap-4">
+              <Button variant="ghost" type="button" onClick={() => setEditCustomer(null)} className="rounded-2xl h-12 px-6 neo-surface text-[#666666] hover:text-[#333333]">
                 Cancelar
               </Button>
-              <Button type="button" onClick={saveEdit} disabled={isSaving} className="rounded-lg bg-primary hover:bg-primary/90 text-white">
+              <Button type="button" onClick={saveEdit} disabled={isSaving} className="rounded-2xl h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
                 {isSaving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </div>
