@@ -33,7 +33,7 @@ const currency = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 0,
 });
 
-export default function ProductCartCard() {
+export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -166,6 +166,7 @@ export default function ProductCartCard() {
         setEmissionSuccess("Factura emitida exitosamente.");
         setQuantities({});
         setSelectedCustomerId("");
+        if (onSuccess) onSuccess();
       } else {
         setEmissionError("Error al emitir la factura. Intenta nuevamente.");
       }

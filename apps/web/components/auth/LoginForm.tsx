@@ -58,21 +58,21 @@ export default function LoginForm() {
         const token = result.access_token || result.token;
 
         if (token) {
-           console.log("--------- TOKEN RECIBIDO ---------");
-           console.log(token);
-           console.log("----------------------------------");
-           
-           // Guardar el token en localStorage y en Cookies para el Middleware
-           localStorage.setItem("token", token);
-           document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
-           
-           // Redirigir al dashboard protegido
-           router.push("/dashboard");
+            console.log("--------- TOKEN RECIBIDO ---------");
+            console.log(token);
+            console.log("----------------------------------");
+            
+            // Guardar el token en localStorage y en Cookies para el Middleware
+            localStorage.setItem("token", token);
+            document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
+            
+            // Redirigir al dashboard protegido
+            router.push("/dashboard");
+          } else {
+            console.error("El backend no devolvió un token dándole un formato válido (esperado: result.access_token o result.token)");
+            setErrorMsg("Error interno: No se recibió token de sesión.");
+          }
         } else {
-           console.error("El backend no devolvió un token dándole un formato válido (esperado: result.access_token o result.token)");
-           setErrorMsg("Error interno: No se recibió token de sesión.");
-        }
-      } else {
         const errorData = await response.json().catch(() => null);
         console.error("Login failed", errorData);
         if (response.status === 401 || response.status === 403) {
@@ -82,10 +82,10 @@ export default function LoginForm() {
         }
       }
     } catch (error) {
-       console.error("Error during login", error);
-       setErrorMsg("No se pudo conectar con el servidor.");
-    } finally {
-       setIsLoading(false);
+        console.error("Error during login", error);
+        setErrorMsg("No se pudo conectar con el servidor.");
+      } finally {
+        setIsLoading(false);
     }
   }
 

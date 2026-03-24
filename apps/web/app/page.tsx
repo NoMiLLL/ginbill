@@ -8,11 +8,11 @@ export default function Home() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-chart-1/20 blur-[100px] rounded-full pointer-events-none" />
       
       <div className="w-full max-w-4xl flex flex-col items-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center">
-          Potencia tus <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-chart-1">facturas</span> en la nube.
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center text-black">
+          Potencia tus facturas en la nube.
         </h1>
         <p className="text-muted-foreground text-center max-w-lg mb-12 text-lg">
-          La forma más rápida, inteligente y hermosa de manejar tu contabilidad. Únete a miles de empresas que confían en Billgin.
+          Genera tus facturas automaticamente con billgin
         </p>
 
         <AuthTabs />
