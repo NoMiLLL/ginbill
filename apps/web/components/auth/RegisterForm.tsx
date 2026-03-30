@@ -44,6 +44,7 @@ export default function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -60,6 +61,7 @@ export default function RegisterForm() {
   async function onSubmit(data: RegisterValues) {
     setIsLoading(true);
     setSuccessMsg("");
+    setErrorMsg("");
     
     try {
       // Connect to the actual backend register endpoint
@@ -88,15 +90,19 @@ export default function RegisterForm() {
             if (Array.isArray(errorData.message)) {
                 // Errores de validación de los DTO de NestJS
                 console.error("Validation failed in backend:", errorData.message);
+                setErrorMsg(errorData.message.join(", "));
             } else {
                 // Errores string como el de BadRequestException que acabamos de agregar
                 setSuccessMsg("");
-                alert(errorData.message); // O usa un toast/alert mejor de tu UI
+                setErrorMsg(errorData.message); // O usa un toast/alert mejor de tu UI
             }
+        } else {
+            setErrorMsg("Ocurrió un error al intentar registrarte.");
         }
       }
     } catch (error) {
        console.error("Network error during register", error);
+       setErrorMsg("Error de red al intentar registrarte.");
     } finally {
        setIsLoading(false);
     }
@@ -112,11 +118,11 @@ export default function RegisterForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre Completo</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Nombre Completo</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. Juan Pérez" className="transition-all focus:ring-2 focus:ring-primary/50" {...field} />
+                <Input placeholder="Ej. Juan Pérez" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
             </FormItem>
           )}
         />
@@ -128,11 +134,11 @@ export default function RegisterForm() {
             name="email"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Correo Electrónico</FormLabel>
+                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</FormLabel>
                 <FormControl>
-                    <Input placeholder="tucorreo@ejemplo.com" className="transition-all focus:ring-2 focus:ring-primary/50" {...field} />
+                    <Input placeholder="tucorreo@ejemplo.com" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1" />
+                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
                 </FormItem>
             )}
             />
@@ -142,11 +148,11 @@ export default function RegisterForm() {
             name="phone"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Teléfono Celular</FormLabel>
+                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Teléfono Celular</FormLabel>
                 <FormControl>
-                    <Input placeholder="Ej. 3001234567" className="transition-all focus:ring-2 focus:ring-primary/50" {...field} />
+                    <Input placeholder="Ej. 3001234567" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1" />
+                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
                 </FormItem>
             )}
             />
@@ -159,11 +165,11 @@ export default function RegisterForm() {
             name="address"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Dirección Física</FormLabel>
+                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Dirección Física</FormLabel>
                 <FormControl>
-                    <Input placeholder="Ej. Calle 100 # 20 - 30" className="transition-all focus:ring-2 focus:ring-primary/50" {...field} />
+                    <Input placeholder="Ej. Calle 100 # 20 - 30" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1" />
+                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
                 </FormItem>
             )}
             />
@@ -173,20 +179,20 @@ export default function RegisterForm() {
             name="municipalityId"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Municipio / Ciudad</FormLabel>
+                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Municipio / Ciudad</FormLabel>
                 <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={field.value ? field.value.toString() : undefined}>
                     <FormControl>
-                    <SelectTrigger className="transition-all focus:ring-2 focus:ring-primary/50">
+                    <SelectTrigger className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus:ring-0 text-[#333333] transition-all">
                         <SelectValue placeholder="Selecciona una ciudad..." />
                     </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="rounded-2xl border-none shadow-xl bg-white/95 backdrop-blur-md">
                         {MUNICIPALITIES.map((mun) => (
-                            <SelectItem key={mun.id} value={mun.id.toString()}>{mun.name}</SelectItem>
+                            <SelectItem key={mun.id} value={mun.id.toString()} className="rounded-xl focus:bg-[#E2E4E9]/50 cursor-pointer">{mun.name}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <FormMessage className="animate-in slide-in-from-top-1" />
+                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
                 </FormItem>
             )}
             />
@@ -198,15 +204,20 @@ export default function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contraseña</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Contraseña</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" className="transition-all focus:ring-2 focus:ring-primary/50" {...field} />
+                <Input type="password" placeholder="••••••••" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
             </FormItem>
           )}
         />
-        
+        {errorMsg && (
+            <div className="p-3 mt-4 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md animate-in zoom-in-95">
+                {errorMsg}
+            </div>
+        )}
+
         {successMsg && (
             <div className="p-3 mt-4 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-md animate-in zoom-in-95">
                 {successMsg}
@@ -215,7 +226,7 @@ export default function RegisterForm() {
 
         <Button 
           type="submit" 
-          className="w-full h-12 text-md font-medium mt-6 transition-all active:scale-[0.98]" 
+          className="w-full h-12 rounded-[1.5rem] bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all text-md font-medium mt-6 active:scale-[0.98]" 
           disabled={isLoading}
         >
           {isLoading ? (

@@ -26,8 +26,31 @@ export class InvoiceService {
       });
       return await this.invoiceRepository.save(entity);
     } catch (error) {
+      console.error(error);
       throw new InternalServerErrorException('Error creating invoice');
     }
+  }
+
+  /**
+   * Mapea el DTO al formato JSON requerido por la API de Factus
+   * Formato de fecha: YYYY-MM-DD
+   */
+  mapToFactusApi(createInvoiceDto: CreateInvoiceDto) {
+    const formatDate = (date?: string) => {
+      if (!date) return undefined;
+      return date.split('T')[0];
+    };
+
+    return {
+      numbering_range_id: createInvoiceDto.numberingRangeId,
+      reference_code: createInvoiceDto.referenceCode,
+      observation: createInvoiceDto.observation,
+      payment_form: createInvoiceDto.paymentForm,
+      payment_method_code: createInvoiceDto.paymentMethodCode,
+      payment_due_date: formatDate(createInvoiceDto.paymentDueDate),
+      start_date: formatDate(createInvoiceDto.startDate),
+      end_date: formatDate(createInvoiceDto.endDate),
+    };
   }
 
   async findAll(bsId: number) {

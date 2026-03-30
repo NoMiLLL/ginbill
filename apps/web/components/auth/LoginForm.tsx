@@ -97,16 +97,16 @@ export default function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Correo Electrónico</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="tucorreo@ejemplo.com" 
                   autoComplete="email" 
-                  className="h-12 px-4 transition-all focus:ring-2 focus:ring-primary/50" 
+                  className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" 
                   {...field} 
                 />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
             </FormItem>
           )}
         />
@@ -115,30 +115,30 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contraseña</FormLabel>
+              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Contraseña</FormLabel>
               <FormControl>
                 <Input 
                   type="password" 
                   placeholder="••••••••" 
                   autoComplete="current-password"
-                  className="h-12 px-4 transition-all focus:ring-2 focus:ring-primary/50" 
+                  className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" 
                   {...field} 
                 />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
                 </FormItem>
           )}
         />
 
         {errorMsg && (
-            <div className="p-3 mt-4 text-sm font-medium text-destructive bg-destructive/10 rounded-md animate-in zoom-in-95">
+            <div className="p-3 mt-4 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md animate-in zoom-in-95">
                 {errorMsg}
             </div>
         )}
         
         <Button 
           type="submit" 
-          className="w-full h-12 text-md font-medium mt-6 transition-all active:scale-[0.98]" 
+          className="w-full h-12 rounded-[1.5rem] bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all text-md font-medium mt-6 active:scale-[0.98]" 
           disabled={isLoading}
         >
           {isLoading ? (

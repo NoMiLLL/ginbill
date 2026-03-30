@@ -71,6 +71,12 @@ export class BsService {
     }
   }
 
+  async findByEmailForAuth(email: string): Promise<BuildingSpot | null> {
+    return this.buildingSpotRepository.findOne({
+      where: { email },
+    });
+  }
+
   async findOne(id: number): Promise<BsResponseDto> {
     try {
       const buildingSpot = await this.buildingSpotRepository.findOne({

@@ -22,7 +22,6 @@ export class BsResponseDto {
   @Exclude()
   password: string;
 
-
   constructor(partial: Partial<BsResponseDto>) {
     Object.assign(this, partial);
   }

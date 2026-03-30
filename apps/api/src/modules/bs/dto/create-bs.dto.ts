@@ -43,6 +43,4 @@ export class CreateBsDto {
   @IsInt()
   @Min(1)
   municipalityId: number;
-
-  }
-
+}
