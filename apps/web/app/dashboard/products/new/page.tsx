@@ -61,7 +61,7 @@ export default function NewProductPage() {
       if (response.ok) {
         setSuccessMsg("Producto creado exitosamente.");
         setTimeout(() => {
-          router.push("/dashboard/products/manage");
+          router.push("/dashboard/products");
         }, 1500);
       } else {
         const err = await response.json();
@@ -88,7 +88,7 @@ export default function NewProductPage() {
         </div>
       </div>
 
-      <div className="bg-card border rounded-xl p-6 shadow-sm">
+      <div className="rounded-[2rem] neo-glass p-8 shadow-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             
@@ -97,24 +97,24 @@ export default function NewProductPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre del Producto / Servicio</FormLabel>
+                  <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Nombre del Producto / Servicio</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej. Consultoría Informática" {...field} />
+                    <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" placeholder="Ej. Consultoría Informática" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Precio Unitario</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Precio Unitario</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" placeholder="Ej. 150000.00" {...field} value={field.value as number | string} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" step="0.01" placeholder="Ej. 150000.00" {...field} value={field.value as number | string} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,9 +126,9 @@ export default function NewProductPage() {
                 name="referenceCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Código de Referencia (SKU)</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Código de Referencia (SKU)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej. CON-001" {...field} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" placeholder="Ej. CON-001" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,15 +136,15 @@ export default function NewProductPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="unitsOfMeasurement"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unidad de Medida</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Unidad de Medida</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Ej. 1 (Unidades)" {...field} value={field.value as number | string} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" placeholder="Ej. 1 (Unidades)" {...field} value={field.value as number | string} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -156,9 +156,9 @@ export default function NewProductPage() {
                 name="codigoEstandar"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Código Estándar</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Código Estándar</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Ej. 99" {...field} value={field.value as number | string} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" placeholder="Ej. 99" {...field} value={field.value as number | string} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -178,11 +178,11 @@ export default function NewProductPage() {
                 </div>
             )}
 
-            <div className="pt-4 flex justify-end gap-3">
+            <div className="pt-6 flex justify-end gap-4 mt-8">
               <Link href="/dashboard/products">
-                <Button variant="outline" type="button" disabled={isLoading}>Cancelar</Button>
+                <Button variant="ghost" type="button" disabled={isLoading} className="rounded-lg h-12 px-6 text-[#666666] hover:bg-gray-100 hover:text-[#333333]">Cancelar</Button>
               </Link>
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} className="rounded-lg h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar Producto
               </Button>

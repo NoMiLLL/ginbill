@@ -3,13 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fetchWithAuth } from "@/lib/api";
 
@@ -179,17 +172,17 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
   };
 
   return (
-    <Card className="w-full border-foreground/10 bg-card/80 shadow-lg backdrop-blur">
-      <CardHeader className="gap-2">
-        <CardTitle>Arma tu carrito de productos</CardTitle>
-        <CardDescription>
-          Elige los modulos que necesitas y visualiza el total al instante.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-xl border border-foreground/10 bg-background/60 p-4">
+    <div className="w-full neo-glass rounded-[2rem] p-6 md:p-8 shadow-2xl flex flex-col gap-8">
+      <div>
+        <h2 className="text-2xl font-bold text-[#333333]">Arma tu carrito de productos</h2>
+        <p className="text-[#666666] mt-1">
+          Elige los productos o servicios que necesitas y visualiza el total al instante.
+        </p>
+      </div>
+      <div className="grid gap-8 md:grid-cols-[1.2fr_1fr]">
+        <section className="rounded-2xl border border-border/50 bg-white p-6 shadow-sm flex flex-col">
           <div className="flex flex-col gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
               Cliente
             </p>
             <Select
@@ -201,7 +194,7 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
               }}
               disabled={isLoadingCustomers || customersError || isEmitting}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full rounded-lg h-12 border border-border/50 bg-background px-4 focus:ring-0 text-[#333333]">
                 <SelectValue
                   placeholder={
                     isLoadingCustomers
@@ -212,7 +205,7 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                   }
                 />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-lg border border-border/50 bg-background">
                 {customers.map((customer) => (
                   <SelectItem key={customer.id} value={customer.id.toString()}>
                     {customer.names}
@@ -222,27 +215,27 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
               </SelectContent>
             </Select>
             {!selectedCustomerId && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[#666666] mt-1">
                 Debes seleccionar un cliente para poder agregar productos.
               </p>
             )}
           </div>
 
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Catalogo
+          <p className="mt-8 text-xs font-bold uppercase tracking-wider text-[#666666]">
+            Catálogo
           </p>
           <div className="mt-4 space-y-3">
             {isLoading ? (
-              <div className="rounded-lg border border-dashed border-foreground/10 p-4 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
                 Cargando productos...
               </div>
             ) : hasError ? (
-              <div className="rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-4 text-center text-sm text-destructive">
-                No fue posible cargar el catalogo. Intenta nuevamente.
+              <div className="rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
+                No fue posible cargar el catálogo. Intenta nuevamente.
               </div>
             ) : products.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-foreground/10 p-4 text-center text-sm text-muted-foreground">
-                Aun no tienes productos registrados.
+              <div className="rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
+                Aún no tienes productos registrados.
               </div>
             ) : (
               products.map((product) => {
@@ -250,16 +243,16 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                 return (
                   <div
                     key={product.id}
-                    className="flex flex-col gap-3 rounded-lg border border-transparent bg-muted/40 px-3 py-3 transition hover:border-foreground/10"
+                    className="flex flex-col gap-4 rounded-xl border border-border/50 bg-background px-5 py-4 transition-all hover:border-[#1F7AE0]/30 shadow-sm"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-foreground">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="font-semibold text-[#333333]">{product.name}</p>
+                        <p className="text-xs text-[#666666] mt-0.5">
                           SKU {product.referenceCode}
                         </p>
                       </div>
-                      <p className="text-sm font-semibold text-foreground">
+                      <p className="text-sm font-bold text-[#333333]">
                         {currency.format(product.price)}
                       </p>
                     </div>
@@ -268,20 +261,20 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                         <Button
                           type="button"
                           variant="outline"
-                          size="icon-xs"
+                          className="h-8 w-8 rounded-lg border-border/50 text-[#666666] hover:text-[#333333] hover:bg-gray-100 p-0"
                           onClick={() => adjustQuantity(product.id, -1)}
                           disabled={quantity === 0 || !selectedCustomerId || isEmitting}
                           aria-label={`Quitar ${product.name}`}
                         >
                           -
                         </Button>
-                        <span className="min-w-6 text-center text-sm font-semibold">
+                        <span className="min-w-6 text-center text-sm font-bold text-[#333333]">
                           {quantity}
                         </span>
                         <Button
                           type="button"
                           variant="outline"
-                          size="icon-xs"
+                          className="h-8 w-8 rounded-lg border-border/50 text-[#666666] hover:text-[#333333] hover:bg-gray-100 p-0"
                           onClick={() => adjustQuantity(product.id, 1)}
                           disabled={!selectedCustomerId || isEmitting}
                           aria-label={`Agregar ${product.name}`}
@@ -289,7 +282,7 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                           +
                         </Button>
                       </div>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs font-semibold text-[#1F7AE0]">
                         Subtotal: {currency.format(product.price * quantity)}
                       </span>
                     </div>
@@ -300,13 +293,13 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
           </div>
         </section>
 
-        <section className="flex h-full flex-col rounded-xl border border-foreground/10 bg-background/70 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Seleccionados
+        <section className="flex h-full flex-col rounded-2xl border border-border/50 bg-[#F8FAFC] p-6 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+            Resumen de Factura
           </p>
           <div className="mt-4 flex flex-1 flex-col gap-3">
             {selectedProducts.length === 0 ? (
-              <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-foreground/10 p-4 text-center text-sm text-muted-foreground">
+              <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
                 {isLoading
                   ? "Cargando resumen..."
                   : "Agrega productos para ver el resumen y el total."}
@@ -317,17 +310,17 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                 return (
                   <div
                     key={product.id}
-                    className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
+                    className="flex items-center justify-between rounded-xl bg-white border border-border/50 px-4 py-3 shadow-sm"
                   >
                     <div>
-                      <p className="text-sm font-medium text-foreground">
+                      <p className="text-sm font-semibold text-[#333333]">
                         {product.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-[#666666] mt-0.5">
                         {quantity} x {currency.format(product.price)}
                       </p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground">
+                    <p className="text-sm font-bold text-[#1F7AE0]">
                       {currency.format(product.price * quantity)}
                     </p>
                   </div>
@@ -344,16 +337,15 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
             </div>
           )}
 
-          <div className="mt-4 flex flex-col gap-4 border-t border-foreground/10 pt-4">
+          <div className="mt-6 flex flex-col gap-6 border-t border-border/50 pt-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-foreground">Total</span>
-              <span className="text-lg font-bold text-foreground">
+              <span className="text-base font-bold text-[#333333]">Total a Pagar</span>
+              <span className="text-2xl font-black text-[#1F7AE0]">
                 {currency.format(total)}
               </span>
             </div>
             <Button 
-              className="w-full" 
-              size="lg"
+              className="w-full rounded-2xl h-14 text-base font-bold bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all" 
               disabled={!selectedCustomerId || total === 0 || isEmitting}
               onClick={handleEmitInvoice}
             >
@@ -361,7 +353,7 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
             </Button>
           </div>
         </section>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

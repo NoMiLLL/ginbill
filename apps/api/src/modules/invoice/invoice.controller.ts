@@ -21,10 +21,7 @@ export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
   @Post()
-  create(
-    @Body() createInvoiceDto: CreateInvoiceDto,
-    @ActiveBs() bs: any,
-  ) {
+  create(@Body() createInvoiceDto: CreateInvoiceDto, @ActiveBs() bs: any) {
     return this.invoiceService.create(createInvoiceDto, bs.id);
   }
 
@@ -34,10 +31,7 @@ export class InvoiceController {
   }
 
   @Get(':id')
-  findOne(
-    @Param('id', ParseIntPipe) id: number,
-    @ActiveBs() bs: any,
-  ) {
+  findOne(@Param('id', ParseIntPipe) id: number, @ActiveBs() bs: any) {
     return this.invoiceService.findOne(id, bs.id);
   }
 
@@ -51,10 +45,7 @@ export class InvoiceController {
   }
 
   @Delete(':id')
-  remove(
-    @Param('id', ParseIntPipe) id: number,
-    @ActiveBs() bs: any,
-  ) {
+  remove(@Param('id', ParseIntPipe) id: number, @ActiveBs() bs: any) {
     return this.invoiceService.remove(id, bs.id);
   }
 }

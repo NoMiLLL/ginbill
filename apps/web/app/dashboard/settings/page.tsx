@@ -106,12 +106,12 @@ export default function SettingsPage() {
           <SettingsIcon className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Configuración de la Cuenta</h1>
-          <p className="text-muted-foreground text-sm">Actualiza la información principal de tu sucursal o negocio.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#333333]">Configuración de la Cuenta</h1>
+          <p className="text-[#666666] text-sm mt-1">Actualiza la información principal de tu sucursal o negocio.</p>
         </div>
       </div>
 
-      <div className="bg-card border rounded-xl shadow-sm overflow-hidden p-6 md:p-8">
+      <div className="rounded-[2rem] neo-glass p-8 shadow-2xl">
         {(actionError || actionSuccess) && (
           <div className="mb-6 border-l-4 px-4 py-3 text-sm bg-muted/30 rounded-r-md">
             {actionError && <span className="font-medium text-destructive border-l-destructive">{actionError}</span>}
@@ -127,10 +127,11 @@ export default function SettingsPage() {
           <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Correo Electrónico</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</label>
                 <Input
                   type="email"
                   placeholder="tu@correo.com"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={formValues.email}
                   onChange={(e) => setFormValues({ ...formValues, email: e.target.value })}
                   required
@@ -138,10 +139,11 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Teléfono</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Teléfono</label>
                 <Input
                   type="text"
                   placeholder="Tu número"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={formValues.phone}
                   onChange={(e) => setFormValues({ ...formValues, phone: e.target.value })}
                   required
@@ -149,15 +151,15 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-foreground">Municipio</label>
+                <label className="text-sm font-semibold text-[#333333] ml-2">Municipio</label>
                 <Select
                   value={formValues.municipalityId}
                   onValueChange={(val) => setFormValues({ ...formValues, municipalityId: val })}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="rounded-lg h-12 w-full border border-border/50 bg-background px-4 focus:ring-0 text-[#333333]">
                     <SelectValue placeholder="Selecciona una ciudad..." />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-lg border border-border/50 bg-background">
                     {MUNICIPALITIES.map((mun) => (
                       <SelectItem key={mun.id} value={mun.id.toString()}>
                         {mun.name}
@@ -168,20 +170,21 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-foreground">
-                  Nueva Contraseña <span className="text-muted-foreground font-normal">(Opcional)</span>
+                <label className="text-sm font-semibold text-[#333333] ml-2">
+                  Nueva Contraseña <span className="text-[#666666] font-normal">(Opcional)</span>
                 </label>
                 <Input
                   type="password"
                   placeholder="Dejar en blanco para no cambiar"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={formValues.password}
                   onChange={(e) => setFormValues({ ...formValues, password: e.target.value })}
                 />
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end">
-              <Button type="submit" disabled={isSaving} className="w-full sm:w-auto">
+            <div className="pt-6 flex justify-end mt-4">
+              <Button type="submit" disabled={isSaving} className="rounded-lg h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
                 {isSaving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </div>

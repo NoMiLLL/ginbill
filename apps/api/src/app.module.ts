@@ -11,10 +11,10 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-    type: 'postgres',
-    url: process.env.database_url,
-    autoLoadEntities: true,
-    synchronize: true,
+      type: 'postgres',
+      url: process.env.database_url,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     BsModule,
     AuthModule,

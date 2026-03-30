@@ -7,7 +7,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { ResponseCustomerDto } from "./dto/customer-response.dto";
+
 import { Customer } from './entities/customer.entity';
+
 
 @Injectable()
 export class CustomerService {
@@ -38,7 +41,7 @@ export class CustomerService {
     }
   }
 
-  async findOne(id: number, bsId: number) {
+  private async findEntity(id: number, bsId: number): Promise<Customer> {
     try {
       const customer = await this.customerRepository.findOne({
         where: { id, bs: { id: bsId } },
@@ -57,9 +60,18 @@ export class CustomerService {
     }
   }
 
-  async replace(id: number, updateCustomerDto: UpdateCustomerDto, bsId: number) {
+  async findOne(id: number, bsId: number): Promise<ResponseCustomerDto> {
+    const customer = await this.findEntity(id, bsId);
+    return new ResponseCustomerDto(customer);
+  }
+
+  async replace(
+    id: number,
+    updateCustomerDto: UpdateCustomerDto,
+    bsId: number,
+  ) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); // Verifica propiedad
 
       const replaced = this.customerRepository.create({
         ...existing,
@@ -78,9 +90,12 @@ export class CustomerService {
 
   async update(id: number, updateCustomerDto: UpdateCustomerDto, bsId: number) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId);
 
-      const updated = this.customerRepository.merge(existing, updateCustomerDto);
+      const updated = this.customerRepository.merge(
+        existing,
+        updateCustomerDto,
+      );
       return await this.customerRepository.save(updated);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -92,7 +107,7 @@ export class CustomerService {
 
   async remove(id: number, bsId: number) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); // Verifica propiedad
       await this.customerRepository.remove(existing);
       return { message: 'Customer deleted successfully' };
     } catch (error) {

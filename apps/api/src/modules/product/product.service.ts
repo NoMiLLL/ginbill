@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ResponseProductDto } from './dto/product-response.dto';
 import { Product } from './entities/product.entity';
 
 @Injectable()
@@ -38,7 +39,7 @@ export class ProductService {
     }
   }
 
-  async findOne(id: number, bsId: number) {
+  private async findEntity(id: number, bsId: number): Promise<Product> {
     try {
       const product = await this.productRepository.findOne({
         where: { id, bs: { id: bsId } },
@@ -58,9 +59,14 @@ export class ProductService {
     }
   }
 
+  async findOne(id: number, bsId: number): Promise<ResponseProductDto> {
+    const product = await this.findEntity(id, bsId);
+    return new ResponseProductDto(product);
+  }
+
   async replace(id: number, updateProductDto: UpdateProductDto, bsId: number) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); // Verifica propiedad
 
       const replaced = this.productRepository.create({
         ...existing,
@@ -80,7 +86,7 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto, bsId: number) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); // Verifica propiedad
 
       const updated = this.productRepository.merge(existing, updateProductDto);
       return await this.productRepository.save(updated);
@@ -95,7 +101,7 @@ export class ProductService {
 
   async remove(id: number, bsId: number) {
     try {
-      const existing = await this.findOne(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); // Verifica propiedad
       await this.productRepository.remove(existing);
       return { message: 'Product deleted successfully' };
     } catch (error) {

@@ -1,4 +1,11 @@
-import { IsNumber, IsOptional, IsPositive, IsString, MaxLength, IsInt } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+  IsInt,
+} from 'class-validator';
 
 export class CreateInvoiceDto {
   @IsNumber({ maxDecimalPlaces: 2 })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Plus, X, Receipt, TrendingUp, Activity, Users, ChevronRight, LayoutDashboard } from "lucide-react";
 import ProductCartCard from "@/components/shared/ProductCartCard";
 import { Button } from "@/components/ui/button";
@@ -242,9 +243,11 @@ export default function DashboardPage() {
             <div className="neo-glass rounded-[2rem] overflow-hidden flex flex-col mt-8">
               <div className="p-8 flex items-center justify-between border-b border-white/20">
                 <h3 className="font-semibold text-xl text-[#333333]">Facturas Recientes</h3>
-                <Button variant="ghost" size="sm" className="text-[#1F7AE0] font-medium hover:neo-surface-sm rounded-xl gap-2 h-10 px-4">
-                  Ver todas <ChevronRight className="h-4 w-4" />
-                </Button>
+                <Link href="/dashboard/invoices">
+                  <Button variant="ghost" size="sm" className="text-[#1F7AE0] font-medium hover:neo-surface-sm rounded-xl gap-2 h-10 px-4">
+                    Ver todas <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">

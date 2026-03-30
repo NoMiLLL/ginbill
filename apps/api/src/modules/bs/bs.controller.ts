@@ -8,6 +8,8 @@ import {
   Patch,
   Post,
   Put,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { BsService } from './bs.service';
 import { CreateBsDto } from './dto/create-bs.dto';
@@ -22,6 +24,7 @@ export class BsController {
     return this.bsService.create(createBsDto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll() {
     return this.bsService.findAll();
@@ -38,12 +41,18 @@ export class BsController {
   }
 
   @Put(':id')
-  replace(@Param('id', ParseIntPipe) id: number, @Body() updateBsDto: UpdateBsDto) {
+  replace(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBsDto: UpdateBsDto,
+  ) {
     return this.bsService.replace(id, updateBsDto);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateBsDto: UpdateBsDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBsDto: UpdateBsDto,
+  ) {
     return this.bsService.update(id, updateBsDto);
   }
 

@@ -199,7 +199,7 @@ export default function CustomersPage() {
           </div>
         )}
         <div className="p-8 border-b border-white/20 flex items-center justify-between">
-          <div className="relative max-w-md w-full neo-pressed rounded-2xl flex items-center h-12 px-4 shadow-sm">
+          <div className="relative max-w-md w-full rounded-lg border border-border/50 bg-background flex items-center h-12 px-4 shadow-sm">
             <Search className="h-5 w-5 text-[#666666]" strokeWidth={2} />
             <Input 
               placeholder="Buscar cliente..." 
@@ -293,7 +293,7 @@ export default function CustomersPage() {
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-[#333333] ml-2">Identificación</label>
                 <Input
-                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.identification}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, identification: event.target.value }))
@@ -303,7 +303,7 @@ export default function CustomersPage() {
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-[#333333] ml-2">Nombre / Razón Social</label>
                 <Input
-                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.names}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, names: event.target.value }))
@@ -314,7 +314,7 @@ export default function CustomersPage() {
                 <label className="text-sm font-semibold text-[#333333] ml-2">Correo</label>
                 <Input
                   type="email"
-                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.email}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, email: event.target.value }))
@@ -324,7 +324,7 @@ export default function CustomersPage() {
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-[#333333] ml-2">Teléfono</label>
                 <Input
-                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.phone}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, phone: event.target.value }))
@@ -334,7 +334,7 @@ export default function CustomersPage() {
               <div className="space-y-2 md:col-span-2">
                 <label className="text-sm font-semibold text-[#333333] ml-2">Dirección</label>
                 <Input
-                  className="rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus-visible:ring-0 text-[#333333]"
+                  className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]"
                   value={editValues.address}
                   onChange={(event) =>
                     setEditValues((prev) => ({ ...prev, address: event.target.value }))
@@ -349,10 +349,10 @@ export default function CustomersPage() {
                     setEditValues((prev) => ({ ...prev, municipalityId: value }))
                   }
                 >
-                  <SelectTrigger className="w-full rounded-2xl h-12 border-none neo-pressed bg-transparent px-4 focus:ring-0 text-[#333333]">
+                  <SelectTrigger className="w-full rounded-lg h-12 border border-border/50 bg-background px-4 focus:ring-0 text-[#333333]">
                     <SelectValue placeholder="Selecciona una ciudad..." />
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-none neo-glass">
+                  <SelectContent className="rounded-lg border border-border/50 bg-background">
                     {MUNICIPALITIES.map((mun) => (
                       <SelectItem key={mun.id} value={mun.id.toString()} className="focus:bg-[#E0E0E0]/50 rounded-xl cursor-pointer">
                         {mun.name}
@@ -363,10 +363,10 @@ export default function CustomersPage() {
               </div>
             </div>
             <div className="mt-8 flex justify-end gap-4">
-              <Button variant="ghost" type="button" onClick={() => setEditCustomer(null)} className="rounded-2xl h-12 px-6 neo-surface text-[#666666] hover:text-[#333333]">
+              <Button variant="ghost" type="button" onClick={() => setEditCustomer(null)} className="rounded-lg h-12 px-6 text-[#666666] hover:bg-gray-100 hover:text-[#333333]">
                 Cancelar
               </Button>
-              <Button type="button" onClick={saveEdit} disabled={isSaving} className="rounded-2xl h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
+              <Button type="button" onClick={saveEdit} disabled={isSaving} className="rounded-lg h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
                 {isSaving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </div>

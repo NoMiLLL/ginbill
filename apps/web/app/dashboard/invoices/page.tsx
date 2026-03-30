@@ -80,7 +80,7 @@ export default function InvoicesPage() {
 
       <div className="neo-glass rounded-[2rem] overflow-hidden flex flex-col mt-4">
         <div className="p-8 border-b border-white/20 flex flex-col md:flex-row items-center gap-6 justify-between">
-          <div className="relative max-w-sm w-full neo-pressed rounded-2xl flex items-center h-12 px-4 shadow-sm">
+          <div className="relative max-w-sm w-full rounded-lg border border-border/50 bg-background flex items-center h-12 px-4 shadow-sm">
             <Search className="h-5 w-5 text-[#666666]" strokeWidth={2} />
             <Input 
               placeholder="Buscar por cliente o ID..." 
@@ -90,7 +90,7 @@ export default function InvoicesPage() {
             />
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full md:w-56 neo-pressed rounded-2xl flex items-center h-12 px-4 shadow-sm">
+            <div className="relative w-full md:w-56 rounded-lg border border-border/50 bg-background flex items-center h-12 px-4 shadow-sm">
               <CalendarIcon className="h-5 w-5 text-[#666666]" strokeWidth={2} />
               <input 
                 type="date"
@@ -103,7 +103,7 @@ export default function InvoicesPage() {
               <Button 
                 variant="ghost" 
                 onClick={() => { setSearch(""); setDateFilter(""); }}
-                className="h-12 px-6 rounded-2xl text-[#666666] hover:text-[#333333] hover:neo-surface font-medium transition-all"
+                className="rounded-lg h-12 px-6 text-[#666666] hover:bg-gray-100 hover:text-[#333333]"
               >
                 Limpiar filtros
               </Button>

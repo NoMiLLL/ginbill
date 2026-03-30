@@ -98,7 +98,7 @@ export default function NewCustomerPage() {
         </div>
       </div>
 
-      <div className="bg-card border border-border/50 rounded-xl p-8 shadow-sm">
+      <div className="rounded-[2rem] neo-glass p-8 shadow-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             
@@ -115,9 +115,9 @@ export default function NewCustomerPage() {
                   name="identification"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Identificación / NIT</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Identificación / NIT</FormLabel>
                       <FormControl>
-                        <Input placeholder="NIT: 900.123.456-1" className="h-10 rounded-lg border-border/50" {...field} />
+                        <Input placeholder="NIT: 900.123.456-1" className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -129,9 +129,9 @@ export default function NewCustomerPage() {
                   name="names"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Nombres o Razón Social</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Nombres o Razón Social</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej. Acme Corporation S.A.S." className="h-10 rounded-lg border-border/50" {...field} />
+                        <Input placeholder="Ej. Acme Corporation S.A.S." className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -153,9 +153,9 @@ export default function NewCustomerPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Correo Electrónico</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</FormLabel>
                       <FormControl>
-                        <Input placeholder="facturacion@acme.com" className="h-10 rounded-lg border-border/50" {...field} />
+                        <Input placeholder="facturacion@acme.com" className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -167,9 +167,9 @@ export default function NewCustomerPage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Teléfono</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Teléfono</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej. +57 300 123 4567" className="h-10 rounded-lg border-border/50" {...field} />
+                        <Input placeholder="Ej. +57 300 123 4567" className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -181,10 +181,10 @@ export default function NewCustomerPage() {
                   name="municipalityId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Municipio / Ciudad</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Municipio / Ciudad</FormLabel>
                       <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={field.value ? field.value.toString() : undefined}>
                         <FormControl>
-                          <SelectTrigger className="h-10 rounded-lg border-border/50">
+                          <SelectTrigger className="rounded-lg h-12 border border-border/50 bg-background px-4 focus:ring-0 text-[#333333]">
                             <SelectValue placeholder="Selecciona una ciudad..." />
                           </SelectTrigger>
                         </FormControl>
@@ -204,9 +204,9 @@ export default function NewCustomerPage() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[#1E293B]">Dirección Física</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Dirección Física</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej. Calle 100 # 15-20, Piso 3" className="h-10 rounded-lg border-border/50" {...field} />
+                        <Input placeholder="Ej. Calle 100 # 15-20, Piso 3" className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -227,13 +227,13 @@ export default function NewCustomerPage() {
                 </div>
             )}
 
-            <div className="pt-6 flex justify-end gap-3 border-t border-border/50">
+            <div className="pt-6 flex justify-end gap-3 border-t border-border/50 mt-8">
               <Link href="/dashboard/customers">
-                <Button variant="ghost" type="button" disabled={isLoading} className="text-[#64748B] hover:text-[#1E293B] rounded-lg">
+                <Button variant="ghost" type="button" disabled={isLoading} className="rounded-lg h-12 px-6 text-[#666666] hover:bg-gray-100 hover:text-[#333333]">
                   Cancelar
                 </Button>
               </Link>
-              <Button type="submit" disabled={isLoading} className="bg-primary hover:bg-primary/90 text-white rounded-lg shadow-sm">
+              <Button type="submit" disabled={isLoading} className="rounded-lg h-12 px-6 bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar Cliente
               </Button>

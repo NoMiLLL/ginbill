@@ -67,7 +67,7 @@ export class InvoiceService {
 
       const { customerId, ...data } = updateInvoiceDto;
       const updated = this.invoiceRepository.merge(existing, data);
-      
+
       if (customerId) {
         updated.customer = { id: customerId } as any;
       }

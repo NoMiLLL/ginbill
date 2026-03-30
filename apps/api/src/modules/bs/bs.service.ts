@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcryptjs from 'bcryptjs';
 import { CreateBsDto } from './dto/create-bs.dto';
+import { BsResponseDto } from './dto/bs-response.dto';
 import { UpdateBsDto } from './dto/update-bs.dto';
 import { BuildingSpot } from './entities/bs.entity';
 
@@ -18,59 +19,69 @@ export class BsService {
     private readonly buildingSpotRepository: Repository<BuildingSpot>,
   ) {}
 
-  async create(createBsDto: CreateBsDto) {
+  async create(createBsDto: CreateBsDto): Promise<BsResponseDto> {
     try {
       const { password, ...data } = createBsDto;
       const hashedPassword = await bcryptjs.hash(password, 10);
-      
+
       const entity = this.buildingSpotRepository.create({
         ...data,
         password: hashedPassword,
       });
-      return await this.buildingSpotRepository.save(entity);
+      const saved = await this.buildingSpotRepository.save(entity);
+      return this.toResponseDto(saved);
     } catch (error: any) {
       if (error.code === '23505') {
-        throw new BadRequestException('El usuario con este correo electrónico o teléfono ya se encuentra registrado');
+        throw new BadRequestException(
+          'El usuario con este correo electrónico o teléfono ya se encuentra registrado',
+        );
       }
       throw new InternalServerErrorException('Error al crear la cuenta');
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<BsResponseDto[]> {
     try {
-      return await this.buildingSpotRepository.find();
+      const items = await this.buildingSpotRepository.find();
+      return items.map((item) => this.toResponseDto(item));
     } catch {
       throw new InternalServerErrorException('Error fetching building spots');
     }
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail(email: string): Promise<BsResponseDto> {
     try {
-      const buildingSpot = await this.buildingSpotRepository.findOne({ where: { email } });
+      const buildingSpot = await this.buildingSpotRepository.findOne({
+        where: { email },
+      });
 
       if (!buildingSpot) {
         throw new NotFoundException('Building spot not found');
       }
 
-      return buildingSpot;
+      return this.toResponseDto(buildingSpot);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
 
-      throw new InternalServerErrorException('Error fetching building spot by email');
+      throw new InternalServerErrorException(
+        'Error fetching building spot by email',
+      );
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<BsResponseDto> {
     try {
-      const buildingSpot = await this.buildingSpotRepository.findOne({ where: { id } });
+      const buildingSpot = await this.buildingSpotRepository.findOne({
+        where: { id },
+      });
 
       if (!buildingSpot) {
         throw new NotFoundException('Building spot not found');
       }
 
-      return buildingSpot;
+      return this.toResponseDto(buildingSpot);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -80,23 +91,26 @@ export class BsService {
     }
   }
 
-  async replace(id: number, updateBsDto: UpdateBsDto) {
+  async replace(id: number, updateBsDto: UpdateBsDto): Promise<BsResponseDto> {
     try {
-      const existing = await this.buildingSpotRepository.findOne({ where: { id } });
+      const existing = await this.buildingSpotRepository.findOne({
+        where: { id },
+      });
 
       if (!existing) {
         throw new NotFoundException('Building spot not found');
       }
 
       const { password, ...data } = updateBsDto;
-      const payload: any = { ...data, id };
-      
+      const payload: Partial<BuildingSpot> = { ...data, id };
+
       if (password) {
         payload.password = await bcryptjs.hash(password, 10);
       }
 
       const replaced = this.buildingSpotRepository.create(payload);
-      return await this.buildingSpotRepository.save(replaced);
+      const saved = await this.buildingSpotRepository.save(replaced);
+      return this.toResponseDto(saved);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -106,9 +120,11 @@ export class BsService {
     }
   }
 
-  async update(id: number, updateBsDto: UpdateBsDto) {
+  async update(id: number, updateBsDto: UpdateBsDto): Promise<BsResponseDto> {
     try {
-      const existing = await this.buildingSpotRepository.findOne({ where: { id } });
+      const existing = await this.buildingSpotRepository.findOne({
+        where: { id },
+      });
 
       if (!existing) {
         throw new NotFoundException('Building spot not found');
@@ -121,7 +137,8 @@ export class BsService {
         updated.password = await bcryptjs.hash(password, 10);
       }
 
-      return await this.buildingSpotRepository.save(updated);
+      const saved = await this.buildingSpotRepository.save(updated);
+      return this.toResponseDto(saved);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -147,5 +164,15 @@ export class BsService {
 
       throw new InternalServerErrorException('Error deleting building spot');
     }
+  }
+
+  private toResponseDto(entity: BuildingSpot): BsResponseDto {
+    return new BsResponseDto({
+      name: entity.name,
+      address: entity.address,
+      phone: entity.phone,
+      email: entity.email,
+      municipalityId: entity.municipalityId,
+    });
   }
 }
