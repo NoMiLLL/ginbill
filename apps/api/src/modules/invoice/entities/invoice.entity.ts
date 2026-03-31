@@ -33,8 +33,7 @@ export class Invoice {
 
   @Column({
     type: 'text',
-    nullable: false,
-    default: '',
+    nullable: true, // Cambiado a true para permitir el arranque
   })
   observation: string;
 
@@ -59,23 +58,21 @@ export class Invoice {
   @Column({
     type: 'date',
     name: 'payment_due_date',
-    nullable: true, // Único campo que puede ser nulo
+    nullable: true,
   })
   paymentDueDate: Date;
 
   @Column({
     type: 'date',
     name: 'start_date',
-    nullable: false,
-    default: () => 'CURRENT_DATE',
+    nullable: true, // Cambiado a true para permitir el arranque
   })
   startDate: Date;
 
   @Column({
     type: 'date',
     name: 'end_date',
-    nullable: false,
-    default: () => 'CURRENT_DATE',
+    nullable: true, // Cambiado a true para permitir el arranque
   })
   endDate: Date;
 
@@ -90,8 +87,7 @@ export class Invoice {
   @Column({
     type: 'varchar',
     length: 255,
-    nullable: false,
-    default: '',
+    nullable: true, // Cambiado a true para permitir el arranque
   })
   description: string;
 

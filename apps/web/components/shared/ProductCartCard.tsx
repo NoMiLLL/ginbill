@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchWithAuth } from "@/lib/api";
+import { Search } from "lucide-react";
+import { useInvoiceStore } from "@/store/useInvoiceStore";
 
 type Product = {
   id: number;
@@ -28,25 +30,43 @@ const currency = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 0,
 });
 
-export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void }) {
+export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; onSuccess?: () => void }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(true);
   const [customersError, setCustomersError] = useState(false);
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
 
-  // Factus fields
-  const [paymentForm, setPaymentForm] = useState<string>("1");
-  const [paymentMethodCode, setPaymentMethodCode] = useState<string>("10");
-  const [numberingRangeId, setNumberingRangeId] = useState<string>("");
-  const [referenceCode, setReferenceCode] = useState<string>("");
-  const [observation, setObservation] = useState<string>("");
-  const [paymentDueDate, setPaymentDueDate] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const tabState = useInvoiceStore(state => state.tabs.find(t => t.id === tabId));
+  const updateTab = useInvoiceStore(state => state.updateTab);
+
+  if (!tabState) return null;
+
+  const {
+    selectedCustomerId,
+    quantities,
+    searchQuery,
+    paymentForm,
+    paymentMethodCode,
+    numberingRangeId,
+    referenceCode,
+    observation,
+    paymentDueDate,
+    startDate,
+    endDate
+  } = tabState;
+
+  const setSelectedCustomerId = (val: string) => updateTab(tabId, { selectedCustomerId: val });
+  const setSearchQuery = (val: string) => updateTab(tabId, { searchQuery: val });
+  const setPaymentForm = (val: string) => updateTab(tabId, { paymentForm: val });
+  const setPaymentMethodCode = (val: string) => updateTab(tabId, { paymentMethodCode: val });
+  const setNumberingRangeId = (val: string) => updateTab(tabId, { numberingRangeId: val });
+  const setReferenceCode = (val: string) => updateTab(tabId, { referenceCode: val });
+  const setObservation = (val: string) => updateTab(tabId, { observation: val });
+  const setPaymentDueDate = (val: string) => updateTab(tabId, { paymentDueDate: val });
+  const setStartDate = (val: string) => updateTab(tabId, { startDate: val });
+  const setEndDate = (val: string) => updateTab(tabId, { endDate: val });
 
   useEffect(() => {
     let isActive = true;
@@ -126,6 +146,20 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
     [products, quantities]
   );
 
+  const displayedProducts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return products.filter((p) => (quantities[p.id] ?? 0) > 0);
+    }
+    
+    return products.filter((p) => {
+      const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
+      const refMatch = p.referenceCode ? p.referenceCode.toLowerCase().includes(query) : false;
+      const isSelected = (quantities[p.id] ?? 0) > 0;
+      return nameMatch || refMatch || isSelected;
+    });
+  }, [products, searchQuery, quantities]);
+
   const total = useMemo(
     () =>
       selectedProducts.reduce(
@@ -136,14 +170,14 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
   );
 
   const adjustQuantity = (productId: number, delta: number) => {
-    setQuantities((prev) => {
-      const nextValue = Math.max(0, (prev[productId] ?? 0) + delta);
-      if (nextValue === 0) {
-        const { [productId]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [productId]: nextValue };
-    });
+    const prev = quantities || {};
+    const nextValue = Math.max(0, (prev[productId] ?? 0) + delta);
+    if (nextValue === 0) {
+      const { [productId]: _, ...rest } = prev;
+      updateTab(tabId, { quantities: rest });
+      return;
+    }
+    updateTab(tabId, { quantities: { ...prev, [productId]: nextValue } });
   };
 
   const handleEmitInvoice = async () => {
@@ -177,14 +211,7 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
 
       if (response.ok) {
         setEmissionSuccess("Factura emitida exitosamente.");
-        setQuantities({});
-        setSelectedCustomerId("");
-        // Reset Factus fields
-        setReferenceCode("");
-        setObservation("");
-        setPaymentDueDate("");
-        setStartDate("");
-        setEndDate("");
+        useInvoiceStore.getState().clearTab(tabId);
         if (onSuccess) onSuccess();
       } else {
         const errData = await response.json();
@@ -325,10 +352,24 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
           )}
 
           <div className="mt-8">
-            <Label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
-              Catálogo
-            </Label>
-            <div className="mt-4 space-y-3">
+            <div className="flex flex-col gap-4 mb-6">
+              <Label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                Búsqueda de Productos
+              </Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                  <Search className="h-5 w-5 text-[#666666]" />
+                </div>
+                <Input
+                  placeholder="Buscar por nombre o SKU..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] focus-visible:ring-0 text-[#333333] transition-all w-full"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-3">
               {isLoading ? (
                 <div className="rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
                   Cargando productos...
@@ -337,12 +378,16 @@ export default function ProductCartCard({ onSuccess }: { onSuccess?: () => void 
                 <div className="rounded-lg border border-dashed border-destructive/30 bg-destructive/5 p-6 text-center text-sm text-destructive">
                   No fue posible cargar el catálogo. Intenta nuevamente.
                 </div>
-              ) : products.length === 0 ? (
+              ) : displayedProducts.length === 0 ? (
                 <div className="rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
-                  Aún no tienes productos registrados.
+                  {searchQuery.trim() 
+                    ? "No se encontraron productos que coincidan con la búsqueda." 
+                    : products.length === 0 
+                      ? "Aún no tienes productos registrados." 
+                      : "Busca productos para agregarlos al carrito."}
                 </div>
               ) : (
-                products.map((product) => {
+                displayedProducts.map((product) => {
                   const quantity = quantities[product.id] ?? 0;
                   return (
                     <div

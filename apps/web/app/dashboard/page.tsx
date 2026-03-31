@@ -22,9 +22,15 @@ interface Invoice {
   };
 }
 
+import { useInvoiceStore } from "@/store/useInvoiceStore";
+
 export default function DashboardPage() {
-  const [tabs, setTabs] = useState<Tab[]>([]);
-  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const { tabs, activeTabId, addTab, removeTab, setActiveTabId } = useInvoiceStore();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [metrics, setMetrics] = useState({
     totalCurrentMonth: 0,
@@ -110,21 +116,12 @@ export default function DashboardPage() {
 
   const createNewTab = () => {
     const newId = crypto.randomUUID();
-    const newTab: Tab = {
-      id: newId,
-      title: `Factura ${tabs.length + 1}`,
-    };
-    setTabs([...tabs, newTab]);
-    setActiveTabId(newId);
+    addTab(newId, `Factura ${tabs.length + 1}`);
   };
 
   const closeTab = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const newTabs = tabs.filter((tab) => tab.id !== id);
-    setTabs(newTabs);
-    if (activeTabId === id) {
-      setActiveTabId(newTabs.length > 0 ? newTabs[newTabs.length - 1].id : null);
-    }
+    removeTab(id);
   };
 
   return (
@@ -145,7 +142,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tab Bar */}
-        {tabs.length > 0 && (
+        {mounted && tabs.length > 0 && (
           <div className="flex items-center gap-1 border-b overflow-x-auto no-scrollbar pb-1">
             {tabs.map((tab) => (
               <button
@@ -172,7 +169,7 @@ export default function DashboardPage() {
 
       {/* Tab Content */}
       <div className="flex-1">
-        {tabs.length === 0 ? (
+        {!mounted || tabs.length === 0 ? (
           <div className="flex flex-col gap-6 animate-in fade-in duration-500">
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -293,9 +290,9 @@ export default function DashboardPage() {
               )}
             >
               <ProductCartCard 
+                tabId={tab.id}
                 onSuccess={() => {
-                  // Optional: close tab or update title after successful emission
-                  // For now, let's just keep it open but maybe we could mark it as "Saved"
+                  useInvoiceStore.getState().clearTab(tab.id); // clear drafted tab contents
                 }}
               />
             </div>
