@@ -45,7 +45,7 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchWithAuth("http://localhost:4000/product");
+      const response = await fetchWithAuth("/product");
       if (response.ok) {
         const data = await response.json();
         setProducts(data);
@@ -66,7 +66,7 @@ export default function ProductsPage() {
     setActionError("");
     setActionSuccess("");
     try {
-      const response = await fetchWithAuth(`http://localhost:4000/product/${product.id}`, {
+      const response = await fetchWithAuth(`/product/${product.id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -112,12 +112,12 @@ export default function ProductsPage() {
     };
 
     try {
-      let response = await fetchWithAuth(`http://localhost:4000/product/${editProduct.id}`, {
+      let response = await fetchWithAuth(`/product/${editProduct.id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });
       if (response.status === 405) {
-        response = await fetchWithAuth(`http://localhost:4000/product/${editProduct.id}`, {
+        response = await fetchWithAuth(`/product/${editProduct.id}`, {
           method: "PUT",
           body: JSON.stringify(payload),
         });

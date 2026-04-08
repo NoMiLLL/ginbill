@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/api";
 
 // Esquema Zod para Login
 const loginSchema = z.object({
@@ -42,27 +43,19 @@ export default function LoginForm() {
     setIsLoading(true);
     setErrorMsg("");
     try {
-      console.log("Login data:", data);
-      
-      const response = await fetch("http://localhost:4000/auth/login", {
+      const response = await fetchWithAuth("/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       
       if (response.ok) {
         const result = await response.json();
-        console.log("Logged in successfully", result);
 
-        // Intenta obtener el token del resultado (NestJS típicamente usa `access_token` o `token`)
+
         const token = result.access_token || result.token;
 
         if (token) {
-            console.log("--------- TOKEN RECIBIDO ---------");
-            console.log(token);
-            console.log("----------------------------------");
-            
-            // Guardar el token en localStorage y en Cookies para el Middleware
+
             localStorage.setItem("token", token);
             document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
             
@@ -75,10 +68,12 @@ export default function LoginForm() {
         } else {
         const errorData = await response.json().catch(() => null);
         console.error("Login failed", errorData);
-        if (response.status === 401 || response.status === 403) {
+        if (errorData?.message) {
+            setErrorMsg(errorData.message);
+        } else if (response.status === 401 || response.status === 403) {
             setErrorMsg("Credenciales incorrectas.");
         } else {
-            setErrorMsg(errorData?.message || "Ocurrió un error al iniciar sesión.");
+            setErrorMsg("Ocurrió un error al iniciar sesión.");
         }
       }
     } catch (error) {

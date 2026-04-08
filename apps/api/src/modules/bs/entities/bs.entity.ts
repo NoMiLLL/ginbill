@@ -9,47 +9,53 @@ export class BuildingSpot {
   id: number;
 
   @Column({
-    name: 'b_s_name',
+    name: 'name',
     type: 'varchar',
     length: 120,
+    nullable: false,
   })
   name: string;
 
   @Column({
-    name: 'b_s_address',
+    name: 'address',
     type: 'varchar',
     length: 200,
+    nullable: false,
   })
   address: string;
 
   @Column({
-    name: 'b_s_phone',
+    name: 'phone',
     type: 'varchar',
     length: 20,
     unique: true,
+    nullable: false,
   })
   phone: string;
 
   @Column({
-    name: 'b_s_email',
+    name: 'email',
     type: 'varchar',
     length: 120,
     unique: true,
+    nullable: false,
   })
   email: string;
 
   @Column({
-    name: 'b_s_password',
+    name: 'password',
     type: 'varchar',
     length: 72,
+    nullable: true,
   })
   password: string;
 
   @Column({
-    name: 'b_s_municipality_id',
-    type: 'int',
+    name: 'municipality_id',
+    type: 'varchar',
+    nullable: false,
   })
-  municipalityId: number;
+  municipalityId: string;
 
   @OneToMany(() => Customer, (customer) => customer.bs)
   customers: Customer[];

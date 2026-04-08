@@ -47,8 +47,8 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         const [invRes, custRes] = await Promise.all([
-          fetchWithAuth("http://localhost:4000/invoice"),
-          fetchWithAuth("http://localhost:4000/customer"),
+          fetchWithAuth("/invoice"),
+          fetchWithAuth("/customer"),
         ]);
         
         const invoices: Invoice[] = invRes.ok ? await invRes.json() : [];
@@ -292,7 +292,7 @@ export default function DashboardPage() {
               <ProductCartCard 
                 tabId={tab.id}
                 onSuccess={() => {
-                  useInvoiceStore.getState().clearTab(tab.id); // clear drafted tab contents
+                  useInvoiceStore.getState().clearTab(tab.id);
                 }}
               />
             </div>

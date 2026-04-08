@@ -33,7 +33,7 @@ export class Invoice {
 
   @Column({
     type: 'text',
-    nullable: true, // Cambiado a true para permitir el arranque
+    nullable: true, 
   })
   observation: string;
 
@@ -65,14 +65,14 @@ export class Invoice {
   @Column({
     type: 'date',
     name: 'start_date',
-    nullable: true, // Cambiado a true para permitir el arranque
+    nullable: false,
   })
   startDate: Date;
 
   @Column({
     type: 'date',
     name: 'end_date',
-    nullable: true, // Cambiado a true para permitir el arranque
+    nullable: false,
   })
   endDate: Date;
 
@@ -91,6 +91,18 @@ export class Invoice {
   })
   description: string;
 
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  items: any[];
+
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
+  customer: any;
+
   @CreateDateColumn({
     name: 'created_at',
   })
@@ -102,11 +114,4 @@ export class Invoice {
   })
   @JoinColumn({ name: 'bs_id' })
   bs: BuildingSpot;
-
-  @ManyToOne(() => Customer, (customer) => customer.invoices, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'customer_id' })
-  customer: Customer;
 }

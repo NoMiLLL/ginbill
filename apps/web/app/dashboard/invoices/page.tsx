@@ -40,7 +40,7 @@ export default function InvoicesPage() {
   const fetchInvoices = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchWithAuth("http://localhost:4000/invoice");
+      const response = await fetchWithAuth("/invoice");
       if (response.ok) {
         const data = await response.json();
         setInvoices(data);

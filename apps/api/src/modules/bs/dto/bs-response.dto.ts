@@ -17,7 +17,7 @@ export class BsResponseDto {
   email: string;
 
   @Expose()
-  municipalityId: number;
+  municipalityId: string;
 
   @Exclude()
   password: string;

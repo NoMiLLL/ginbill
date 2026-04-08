@@ -34,13 +34,7 @@ interface Customer {
   municipalityId?: number;
 }
 
-const MUNICIPALITIES = [
-  { id: 1, name: "Bogotá, D.C." },
-  { id: 2, name: "Medellín" },
-  { id: 3, name: "Cali" },
-  { id: 4, name: "Barranquilla" },
-  { id: 5, name: "Cartagena" },
-];
+import { MUNICIPALITIES } from "@/lib/constants";
 
 export default function ManageCustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -64,7 +58,7 @@ export default function ManageCustomersPage() {
   const fetchCustomers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetchWithAuth("http://localhost:4000/customer");
+      const response = await fetchWithAuth("/customer");
       if (response.ok) {
         const data = await response.json();
         setCustomers(data);
@@ -85,7 +79,7 @@ export default function ManageCustomersPage() {
     setActionError("");
     setActionSuccess("");
     try {
-      const response = await fetchWithAuth(`http://localhost:4000/customer/${customer.id}`, {
+      const response = await fetchWithAuth(`/customer/${customer.id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -133,12 +127,12 @@ export default function ManageCustomersPage() {
     };
 
     try {
-      let response = await fetchWithAuth(`http://localhost:4000/customer/${editCustomer.id}`, {
+      let response = await fetchWithAuth(`/customer/${editCustomer.id}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });
       if (response.status === 405) {
-        response = await fetchWithAuth(`http://localhost:4000/customer/${editCustomer.id}`, {
+        response = await fetchWithAuth(`/customer/${editCustomer.id}`, {
           method: "PUT",
           body: JSON.stringify(payload),
         });

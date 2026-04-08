@@ -8,7 +8,10 @@ import {
   IsEnum,
   IsDateString,
   ValidateIf,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum PaymentForm {
   CONTADO = '1',
@@ -23,6 +26,29 @@ export enum PaymentMethodCode {
   TARJETA_CREDITO = '48',
   TARJETA_DEBITO = '49',
   OTRO = 'ZZ',
+}
+
+export class InvoiceItemSnapshotDto {
+  @IsString()
+  productId: string;
+
+  @IsNumber()
+  @IsPositive()
+  quantity: number;
+
+  @IsNumber()
+  @IsPositive()
+  unit_price: number;
+
+  @IsNumber()
+  tax_rate: number;
+
+  @IsString()
+  tax_name: string;
+
+  @IsOptional()
+  @IsNumber()
+  discount_rate?: number;
 }
 
 export class CreateInvoiceDto {
@@ -61,11 +87,14 @@ export class CreateInvoiceDto {
   @IsDateString()
   paymentDueDate?: string;
 
-  @IsOptional()
   @IsDateString()
-  startDate?: string;
+  startDate: string;
 
-  @IsOptional()
   @IsDateString()
-  endDate?: string;
+  endDate: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => InvoiceItemSnapshotDto)
+  items: InvoiceItemSnapshotDto[];
 }

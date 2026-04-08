@@ -8,13 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings as SettingsIcon } from "lucide-react";
 
-const MUNICIPALITIES = [
-  { id: 1, name: "Bogotá, D.C." },
-  { id: 2, name: "Medellín" },
-  { id: 3, name: "Cali" },
-  { id: 4, name: "Barranquilla" },
-  { id: 5, name: "Cartagena" },
-];
+import { MUNICIPALITIES } from "@/lib/constants";
 
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +33,7 @@ export default function SettingsPage() {
         const decoded: any = jwtDecode(token);
         if (decoded.sub) {
           setBsId(decoded.sub);
-          const response = await fetchWithAuth(`http://localhost:4000/building-spot/${decoded.sub}`);
+          const response = await fetchWithAuth(`/building-spot/${decoded.sub}`);
           if (response.ok) {
             const data = await response.json();
             setFormValues({
@@ -80,7 +74,7 @@ export default function SettingsPage() {
     }
 
     try {
-      const response = await fetchWithAuth(`http://localhost:4000/building-spot/${bsId}`, {
+      const response = await fetchWithAuth(`/building-spot/${bsId}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });

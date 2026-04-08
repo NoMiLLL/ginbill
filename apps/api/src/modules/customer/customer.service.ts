@@ -106,7 +106,7 @@ export class CustomerService {
 
   async remove(id: number, bsId: number) {
     try {
-      const existing = await this.findEntity(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId);
       await this.customerRepository.remove(existing);
       return { message: 'Customer deleted successfully' };
     } catch (error) {

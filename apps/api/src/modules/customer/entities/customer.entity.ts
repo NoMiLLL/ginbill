@@ -15,6 +15,7 @@ export class Customer {
   id: number;
 
   @Column({
+    name: 'identification',
     type: 'varchar',
     length: 50,
     unique: true,
@@ -22,24 +23,28 @@ export class Customer {
   identification: string;
 
   @Column({
+    name: 'names',
     type: 'varchar',
     length: 150,
   })
   names: string;
 
   @Column({
+    name: 'address',
     type: 'varchar',
     length: 200,
   })
   address: string;
 
   @Column({
+    name: 'email',
     type: 'varchar',
     length: 120,
   })
   email: string;
 
   @Column({
+    name: 'phone',
     type: 'varchar',
     length: 20,
   })

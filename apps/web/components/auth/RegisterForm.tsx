@@ -17,12 +17,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/api";
 
-// Esquema Zod para Registro (Basado en el DTO de NestJS)
+
 const registerSchema = z.object({
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre no puede exceder 100 caracteres").trim(),
   address: z.string().min(1, "La dirección es requerida").max(150, "La dirección no puede exceder 150 caracteres").trim(),
-  // Validación básica para celular de Colombia (empieza por 3 y tiene 10 dígitos)
+
   phone: z.string().regex(/^3\d{9}$/, "Debe ser un número de celular de Colombia válido (ej: 3001234567)"),
   email: z.string().min(1, "El correo electrónico es requerido").email("Asegúrate de colocar un correo válido").trim().toLowerCase(),
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres").max(72, "La contraseña no puede exceder 72 caracteres"),
@@ -31,14 +32,7 @@ const registerSchema = z.object({
 
 type RegisterValues = z.infer<typeof registerSchema>;
 
-// Municipios quemados para el Frontend a forma de ejempo
-const MUNICIPALITIES = [
-  { id: 1, name: "Bogotá, D.C." },
-  { id: 2, name: "Medellín" },
-  { id: 3, name: "Cali" },
-  { id: 4, name: "Barranquilla" },
-  { id: 5, name: "Cartagena" },
-];
+import { MUNICIPALITIES } from "@/lib/constants";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -64,47 +58,42 @@ export default function RegisterForm() {
     setErrorMsg("");
     
     try {
-      // Connect to the actual backend register endpoint
-      console.log("Sending Register data:", data);
-      
-      const response = await fetch("http://localhost:4000/auth/register", {
+      const response = await fetchWithAuth("/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       
       if (response.ok) {
         const result = await response.json();
-        console.log("Registered successfully", result);
         setSuccessMsg("¡Registro exitoso! Ya puedes iniciar sesión.");
         form.reset();
         
-        // Opcional: Redirigir o recargar después de un momento para que vean el éxito
+
         setTimeout(() => {
-            window.location.reload(); // De base esto reiniciará las pestañas y dejará al usuario en Login (que es el tab por defecto)
+            window.location.reload();
         }, 2000);
       } else {
         const errorData = await response.json();
         
         if (errorData.message) {
             if (Array.isArray(errorData.message)) {
-                // Errores de validación de los DTO de NestJS
+                
                 console.error("Validation failed in backend:", errorData.message);
                 setErrorMsg(errorData.message.join(", "));
             } else {
-                // Errores string como el de BadRequestException que acabamos de agregar
+                
                 setSuccessMsg("");
-                setErrorMsg(errorData.message); // O usa un toast/alert mejor de tu UI
+                setErrorMsg(errorData.message); 
             }
         } else {
             setErrorMsg("Ocurrió un error al intentar registrarte.");
         }
       }
     } catch (error) {
-       console.error("Network error during register", error);
-       setErrorMsg("Error de red al intentar registrarte.");
-    } finally {
-       setIsLoading(false);
+        console.error("Network error during register", error);
+        setErrorMsg("Error de red al intentar registrarte.");
+      } finally {
+        setIsLoading(false);
     }
   }
 
@@ -127,7 +116,7 @@ export default function RegisterForm() {
           )}
         />
 
-        {/* Dos Columnas para Correo y Teléfono */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
             control={form.control}
@@ -158,7 +147,7 @@ export default function RegisterForm() {
             />
         </div>
 
-        {/* Dos Columnas para Dirección y Ciudad */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
             control={form.control}
@@ -198,7 +187,7 @@ export default function RegisterForm() {
             />
         </div>
 
-        {/* Contraseña */}
+        {}
         <FormField
           control={form.control}
           name="password"

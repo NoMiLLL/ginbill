@@ -1,10 +1,21 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
 export default function AuthTabs() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return <div className="w-full max-w-md mx-auto h-[400px] rounded-[2rem] neo-glass p-8 shadow-2xl animate-pulse" />;
+  }
+
   return (
     <div className="w-full max-w-md mx-auto rounded-[2rem] neo-glass p-8 shadow-2xl">
       <div className="mb-6 text-center">

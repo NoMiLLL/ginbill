@@ -53,7 +53,7 @@ export default function NewProductPage() {
     setErrorMsg("");
     
     try {
-      const response = await fetchWithAuth("http://localhost:4000/product", {
+      const response = await fetchWithAuth("/product", {
         method: "POST",
         body: JSON.stringify(data),
       });

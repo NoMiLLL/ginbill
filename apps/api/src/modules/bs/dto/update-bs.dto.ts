@@ -41,7 +41,7 @@ export class UpdateBsDto {
   password?: string;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  municipalityId?: number;
+  @IsString()
+  @Transform(({ value }) => value?.toString())
+  municipalityId?: string;
 }

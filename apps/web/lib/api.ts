@@ -1,32 +1,49 @@
 import { jwtDecode } from "jwt-decode";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
   
-  // Headers por defecto, asegurando que enviamos JSON
   const headers: HeadersInit = {
-    "Content-Type": "application/json",
     ...options.headers,
   };
 
-  // Si hay token, lo agregamos al Authorization header
+  if (options.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  // Ejecutamos la petición original
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  // Ensure URL is absolute or prepended with base URL
+  const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 
-  // Si el backend nos responde 401 (No autorizado) significa que el token expiró o es inválido
-  if (response.status === 401) {
-    console.warn("Sesión expirada detectada por el servidor (401)");
-    localStorage.removeItem("token");
-    window.location.href = "/?expired=true";
+  try {
+    const response = await fetch(fullUrl, {
+      ...options,
+      headers,
+    });
+
+    if (response.status === 401) {
+      console.warn("Sesión expirada detectada por el servidor (401)");
+      localStorage.removeItem("token");
+      if (typeof window !== "undefined") {
+        window.location.href = "/?expired=true";
+      }
+      return response;
+    }
+
     return response;
+  } catch (error) {
+    console.error(`Fetch error for ${fullUrl}:`, error);
+    // Return a fake "offline" response to allow components to handle it gracefully
+    return {
+      ok: false,
+      status: 503,
+      statusText: "Service Unavailable",
+      json: async () => ({ message: "No se pudo conectar con el servidor. Verifica que el backend esté corriendo." }),
+    } as Response;
   }
-
-  return response;
 }

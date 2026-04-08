@@ -66,7 +66,7 @@ export class ProductService {
 
   async replace(id: number, updateProductDto: UpdateProductDto, bsId: number) {
     try {
-      const existing = await this.findEntity(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId);
 
       const replaced = this.productRepository.create({
         ...existing,
@@ -86,7 +86,7 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto, bsId: number) {
     try {
-      const existing = await this.findEntity(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId);
 
       const updated = this.productRepository.merge(existing, updateProductDto);
       return await this.productRepository.save(updated);
@@ -101,7 +101,7 @@ export class ProductService {
 
   async remove(id: number, bsId: number) {
     try {
-      const existing = await this.findEntity(id, bsId); // Verifica propiedad
+      const existing = await this.findEntity(id, bsId); 
       await this.productRepository.remove(existing);
       return { message: 'Product deleted successfully' };
     } catch (error) {

@@ -7,8 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { fetchWithAuth } from "@/lib/api";
-import { Search } from "lucide-react";
-import { useInvoiceStore } from "@/store/useInvoiceStore";
+import { Search, Percent, Tag } from "lucide-react";
+import { useInvoiceStore, InvoiceItemDetails } from "@/store/useInvoiceStore";
 
 type Product = {
   id: number;
@@ -45,7 +45,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
 
   const {
     selectedCustomerId,
-    quantities,
+    items = {}, 
     searchQuery,
     paymentForm,
     paymentMethodCode,
@@ -75,7 +75,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
       setIsLoading(true);
       setHasError(false);
       try {
-        const response = await fetchWithAuth("http://localhost:4000/product");
+        const response = await fetchWithAuth("/product");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
@@ -109,7 +109,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
       setIsLoadingCustomers(true);
       setCustomersError(false);
       try {
-        const response = await fetchWithAuth("http://localhost:4000/customer");
+        const response = await fetchWithAuth("/customer");
         if (!response.ok) {
           throw new Error("Failed to fetch customers");
         }
@@ -140,44 +140,56 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
   const [emissionSuccess, setEmissionSuccess] = useState("");
   const [emissionError, setEmissionError] = useState("");
 
-  // Definimos primero las variables calculadas y funciones de ajuste
   const selectedProducts = useMemo(
-    () => products.filter((product) => (quantities[product.id] ?? 0) > 0),
-    [products, quantities]
+    () => products.filter((product) => (items[product.id]?.quantity ?? 0) > 0),
+    [products, items]
   );
 
   const displayedProducts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) {
-      return products.filter((p) => (quantities[p.id] ?? 0) > 0);
+      return products.filter((p) => (items[p.id]?.quantity ?? 0) > 0);
     }
     
     return products.filter((p) => {
       const nameMatch = p.name ? p.name.toLowerCase().includes(query) : false;
       const refMatch = p.referenceCode ? p.referenceCode.toLowerCase().includes(query) : false;
-      const isSelected = (quantities[p.id] ?? 0) > 0;
+      const isSelected = (items[p.id]?.quantity ?? 0) > 0;
       return nameMatch || refMatch || isSelected;
     });
-  }, [products, searchQuery, quantities]);
+  }, [products, searchQuery, items]);
 
   const total = useMemo(
     () =>
       selectedProducts.reduce(
-        (sum, product) => sum + product.price * (quantities[product.id] ?? 0),
+        (sum, product) => {
+            const detail = items[product.id];
+            const subtotal = product.price * detail.quantity;
+            const discount = subtotal * (detail.discount_rate / 100);
+            return sum + (subtotal - discount);
+        },
         0
       ),
-    [selectedProducts, quantities]
+    [selectedProducts, items]
   );
 
-  const adjustQuantity = (productId: number, delta: number) => {
-    const prev = quantities || {};
-    const nextValue = Math.max(0, (prev[productId] ?? 0) + delta);
-    if (nextValue === 0) {
-      const { [productId]: _, ...rest } = prev;
-      updateTab(tabId, { quantities: rest });
-      return;
+  const updateItemDetail = (productId: number, partial: Partial<InvoiceItemDetails>) => {
+    const prevItems = items || {};
+    const current = prevItems[productId] || { quantity: 0, tax_rate: 19, tax_name: "IVA", discount_rate: 0 };
+    
+    const nextValue = { ...current, ...partial };
+    
+    if (nextValue.quantity === 0) {
+      const { [productId]: _, ...rest } = prevItems;
+      updateTab(tabId, { items: rest });
+    } else {
+      updateTab(tabId, { items: { ...prevItems, [productId]: nextValue } });
     }
-    updateTab(tabId, { quantities: { ...prev, [productId]: nextValue } });
+  };
+
+  const adjustQuantity = (productId: number, delta: number) => {
+    const currentQty = items[productId]?.quantity ?? 0;
+    updateItemDetail(productId, { quantity: Math.max(0, currentQty + delta) });
   };
 
   const handleEmitInvoice = async () => {
@@ -187,12 +199,24 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
     setEmissionError("");
     setEmissionSuccess("");
 
+    const formattedItems = selectedProducts.map(p => {
+        const detail = items[p.id];
+        return {
+            productId: p.id.toString(),
+            quantity: detail.quantity,
+            unit_price: p.price,
+            tax_rate: detail.tax_rate,
+            tax_name: detail.tax_name,
+            discount_rate: detail.discount_rate
+        };
+    });
+
     const description = selectedProducts
-      .map((p) => `${quantities[p.id]}x ${p.name}`)
+      .map((p) => `${items[p.id].quantity}x ${p.name}`)
       .join(", ");
 
     try {
-      const response = await fetchWithAuth("http://localhost:4000/invoice", {
+      const response = await fetchWithAuth("/invoice", {
         method: "POST",
         body: JSON.stringify({
           total,
@@ -206,6 +230,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
           paymentDueDate: paymentDueDate || undefined,
           startDate: startDate || undefined,
           endDate: endDate || undefined,
+          items: formattedItems
         }),
       });
 
@@ -369,7 +394,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
               </div>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {isLoading ? (
                 <div className="rounded-lg border border-dashed border-border/50 p-6 text-center text-sm text-[#666666]">
                   Cargando productos...
@@ -388,52 +413,85 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                 </div>
               ) : (
                 displayedProducts.map((product) => {
-                  const quantity = quantities[product.id] ?? 0;
+                  const itemDetail = items[product.id] || { quantity: 0, tax_rate: 19, tax_name: "IVA", discount_rate: 0 };
+                  const quantity = itemDetail.quantity;
+                  const isSelected = quantity > 0;
+
                   return (
                     <div
                       key={product.id}
-                      className="flex flex-col gap-4 rounded-xl border border-border/50 bg-background px-5 py-4 transition-all hover:border-[#1F7AE0]/30 shadow-sm"
+                      className={`flex flex-col gap-4 rounded-[1.5rem] border p-5 transition-all shadow-sm ${
+                        isSelected ? "border-[#1F7AE0] bg-[#1F7AE0]/5" : "border-border/50 bg-background hover:border-[#1F7AE0]/30"
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-semibold text-[#333333]">{product.name}</p>
-                          <p className="text-xs text-[#666666] mt-0.5">
-                            SKU {product.referenceCode}
+                          <p className="font-bold text-[#333333]">{product.name}</p>
+                          <p className="text-xs text-[#666666] mt-0.5 font-medium">
+                            REF: {product.referenceCode}
                           </p>
                         </div>
-                        <p className="text-sm font-bold text-[#333333]">
+                        <p className="text-sm font-black text-[#333333]">
                           {currency.format(product.price)}
                         </p>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+
+                      {isSelected && (
+                        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="flex flex-col gap-1.5">
+                            <Label className="text-[10px] font-bold uppercase text-[#666666] flex items-center gap-1">
+                              <Percent className="h-3 w-3" /> Impuesto (%)
+                            </Label>
+                            <Input 
+                              type="number"
+                              value={itemDetail.tax_rate}
+                              onChange={(e) => updateItemDetail(product.id, { tax_rate: Number(e.target.value) })}
+                              className="h-9 rounded-xl border-none bg-white px-3 focus-visible:ring-1 focus-visible:ring-[#1F7AE0] text-xs font-bold"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <Label className="text-[10px] font-bold uppercase text-[#666666] flex items-center gap-1">
+                               <Tag className="h-3 w-3" /> Descuento (%)
+                            </Label>
+                            <Input 
+                              type="number"
+                              value={itemDetail.discount_rate}
+                              onChange={(e) => updateItemDetail(product.id, { discount_rate: Number(e.target.value) })}
+                              className="h-9 rounded-xl border-none bg-white px-3 focus-visible:ring-1 focus-visible:ring-[#1F7AE0] text-xs font-bold"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between mt-1">
+                        <div className="flex items-center gap-3">
                           <Button
                             type="button"
                             variant="outline"
-                            className="h-8 w-8 rounded-lg border-border/50 text-[#666666] hover:text-[#333333] hover:bg-gray-100 p-0"
+                            className="h-9 w-9 rounded-xl border-none bg-[#E2E4E9] text-[#333333] hover:bg-[#D4D6DC] p-0 font-bold text-lg active:scale-90 transition-all"
                             onClick={() => adjustQuantity(product.id, -1)}
                             disabled={quantity === 0 || !selectedCustomerId || isEmitting}
-                            aria-label={`Quitar ${product.name}`}
                           >
                             -
                           </Button>
-                          <span className="min-w-6 text-center text-sm font-bold text-[#333333]">
+                          <span className="min-w-6 text-center text-sm font-black text-[#333333]">
                             {quantity}
                           </span>
                           <Button
                             type="button"
                             variant="outline"
-                            className="h-8 w-8 rounded-lg border-border/50 text-[#666666] hover:text-[#333333] hover:bg-gray-100 p-0"
+                            className="h-9 w-9 rounded-xl border-none bg-[#1F7AE0] text-white hover:bg-[#1A6DD0] p-0 font-bold text-lg active:scale-90 transition-all"
                             onClick={() => adjustQuantity(product.id, 1)}
                             disabled={!selectedCustomerId || isEmitting}
-                            aria-label={`Agregar ${product.name}`}
                           >
                             +
                           </Button>
                         </div>
-                        <span className="text-xs font-semibold text-[#1F7AE0]">
-                          Subtotal: {currency.format(product.price * quantity)}
-                        </span>
+                        {isSelected && (
+                            <span className="text-sm font-black text-[#1F7AE0]">
+                            {currency.format((product.price * quantity) * (1 - itemDetail.discount_rate / 100))}
+                            </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -456,22 +514,31 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
               </div>
             ) : (
               selectedProducts.map((product) => {
-                const quantity = quantities[product.id] ?? 0;
+                const detail = items[product.id];
+                const subtotal = product.price * detail.quantity;
+                const discounted = subtotal * (1 - detail.discount_rate / 100);
                 return (
                   <div
                     key={product.id}
                     className="flex items-center justify-between rounded-xl bg-white border border-border/50 px-4 py-3 shadow-sm"
                   >
-                    <div>
-                      <p className="text-sm font-semibold text-[#333333]">
+                    <div className="flex-1 mr-4">
+                      <p className="text-sm font-bold text-[#333333] truncate">
                         {product.name}
                       </p>
-                      <p className="text-xs text-[#666666] mt-0.5">
-                        {quantity} x {currency.format(product.price)}
-                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] bg-[#E2E4E9] px-2 py-0.5 rounded-full font-bold text-[#666666]">
+                            {detail.quantity} Unidades
+                        </span>
+                        {detail.discount_rate > 0 && (
+                            <span className="text-[10px] bg-emerald-100 px-2 py-0.5 rounded-full font-bold text-emerald-700">
+                                -{detail.discount_rate}% Desc
+                            </span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm font-bold text-[#1F7AE0]">
-                      {currency.format(product.price * quantity)}
+                    <p className="text-sm font-black text-[#1F7AE0]">
+                      {currency.format(discounted)}
                     </p>
                   </div>
                 );
@@ -484,8 +551,8 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
               Observaciones
             </Label>
             <textarea 
-              className="w-full rounded-xl border border-border/50 p-3 text-sm focus:ring-1 focus:ring-[#1F7AE0] outline-none min-h-[80px]"
-              placeholder="Notas adicionales para la factura..."
+              className="w-full rounded-[1.5rem] border-none bg-white p-4 text-sm focus:ring-2 focus:ring-[#1F7AE0]/30 outline-none min-h-[100px] shadow-sm transition-all"
+              placeholder="Notas adicionales para la factura (opcional)..."
               value={observation}
               onChange={(e) => setObservation(e.target.value)}
             />
@@ -500,7 +567,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all text-sm"
+                className="rounded-[1.5rem] h-12 border-none bg-white px-4 focus-visible:ring-2 focus-visible:ring-[#1F7AE0]/30 text-[#333333] transition-all text-sm shadow-sm"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -511,32 +578,32 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all text-sm"
+                className="rounded-[1.5rem] h-12 border-none bg-white px-4 focus-visible:ring-2 focus-visible:ring-[#1F7AE0]/30 text-[#333333] transition-all text-sm shadow-sm"
               />
             </div>
           </div>
 
           {(emissionSuccess || emissionError) && (
-            <div className={`mt-4 rounded-lg p-3 text-sm font-medium ${
-              emissionSuccess ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive"
+            <div className={`mt-4 rounded-xl p-4 text-sm font-bold animate-in zoom-in-95 ${
+              emissionSuccess ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
             }`}>
               {emissionSuccess || emissionError}
             </div>
           )}
 
-          <div className="mt-6 flex flex-col gap-6 border-t border-border/50 pt-6">
+          <div className="mt-8 flex flex-col gap-6 border-t border-border/50 pt-6">
             <div className="flex items-center justify-between">
-              <span className="text-base font-bold text-[#333333]">Total a Pagar</span>
-              <span className="text-2xl font-black text-[#1F7AE0]">
+              <span className="text-base font-bold text-[#666666]">Total a Pagar</span>
+              <span className="text-3xl font-black text-[#1F7AE0]">
                 {currency.format(total)}
               </span>
             </div>
             <Button 
-              className="w-full rounded-2xl h-14 text-base font-bold bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all" 
+              className="w-full rounded-[1.5rem] h-16 text-lg font-black bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-xl shadow-[#1F7AE0]/30 transition-all active:scale-95 disabled:opacity-50" 
               disabled={!selectedCustomerId || total === 0 || isEmitting}
               onClick={handleEmitInvoice}
             >
-              {isEmitting ? "Procesando..." : "Emitir Factura"}
+              {isEmitting ? "Procesando..." : "Emitir Factura Electrónica"}
             </Button>
           </div>
         </section>

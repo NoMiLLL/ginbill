@@ -41,7 +41,7 @@ export class AuthService {
       email,
       address,
       phone,
-      password: await bcryptjs.hash(password, 10),
+      password, // Pasamos el password sin hashear porque BsService.create se encarga de ello
       municipalityId,
     });
   }
@@ -49,11 +49,11 @@ export class AuthService {
   async login({ email, password }: LoginDto) {
     const bs = await this.bsService.findByEmailForAuth(email);
     if (!bs) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('El correo electrónico no está registrado');
     }
     const isPasswordValid = await bcryptjs.compare(password, bs.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('Contraseña incorrecta');
     }
     const payload = { email: bs.email, sub: bs.id };
     const token = await this.jwtService.signAsync(payload);

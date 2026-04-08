@@ -40,7 +40,8 @@ export class CreateBsDto {
   @MaxLength(72)
   password: string;
 
-  @IsInt()
-  @Min(1)
-  municipalityId: number;
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value?.toString())
+  municipalityId: string;
 }

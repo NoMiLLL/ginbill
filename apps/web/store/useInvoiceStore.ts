@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface InvoiceItemDetails {
+  quantity: number;
+  tax_rate: number;
+  tax_name: string;
+  discount_rate: number;
+}
+
 export interface InvoiceDraft {
   id: string;
   title: string;
   selectedCustomerId: string;
-  quantities: Record<number, number>;
+  items: Record<number, InvoiceItemDetails>; 
   searchQuery: string;
   paymentForm: string;
   paymentMethodCode: string;
@@ -31,11 +38,11 @@ interface InvoiceStore {
 
 const defaultDraft: Omit<InvoiceDraft, 'id' | 'title'> = {
   selectedCustomerId: "",
-  quantities: {},
+  items: {},
   searchQuery: "",
   paymentForm: "1",
   paymentMethodCode: "10",
-  numberingRangeId: "",
+  numberingRangeId: "1",
   referenceCode: "",
   observation: "",
   paymentDueDate: "",
@@ -78,7 +85,7 @@ export const useInvoiceStore = create<InvoiceStore>()(
       })),
     }),
     {
-      name: 'invoice-drafts-storage', // name of the item in localStorage
+      name: 'invoice-drafts-storage',
     }
   )
 );

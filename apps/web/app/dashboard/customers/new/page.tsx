@@ -31,13 +31,7 @@ const customerSchema = z.object({
 
 type CustomerValues = z.infer<typeof customerSchema>;
 
-const MUNICIPALITIES = [
-  { id: 1, name: "Bogotá, D.C." },
-  { id: 2, name: "Medellín" },
-  { id: 3, name: "Cali" },
-  { id: 4, name: "Barranquilla" },
-  { id: 5, name: "Cartagena" },
-];
+import { MUNICIPALITIES } from "@/lib/constants";
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -63,7 +57,7 @@ export default function NewCustomerPage() {
     setErrorMsg("");
     
     try {
-      const response = await fetchWithAuth("http://localhost:4000/customer", {
+      const response = await fetchWithAuth("/customer", {
         method: "POST",
         body: JSON.stringify(data),
       });
