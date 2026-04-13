@@ -44,7 +44,7 @@ const defaultDraft: Omit<InvoiceDraft, 'id' | 'title'> = {
   searchQuery: "",
   paymentForm: "1",
   paymentMethodCode: "10",
-  numberingRangeId: "1",
+  numberingRangeId: "8",
   referenceCode: "",
   observation: "",
   paymentDueDate: "",

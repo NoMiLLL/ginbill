@@ -67,7 +67,12 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
   const setReferenceCode = (val: string) => updateTab(tabId, { referenceCode: val });
   const setObservation = (val: string) => updateTab(tabId, { observation: val });
   const setPaymentDueDate = (val: string) => updateTab(tabId, { paymentDueDate: val });
-  const setStartDate = (val: string) => updateTab(tabId, { startDate: val });
+  const setStartDate = (val: string) => {
+    updateTab(tabId, { startDate: val });
+    if (endDate && val > endDate) {
+      updateTab(tabId, { endDate: val });
+    }
+  };
   const setEndDate = (val: string) => updateTab(tabId, { endDate: val });
 
   useEffect(() => {
@@ -353,15 +358,18 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
-                Rango de Numeración (ID)
+                Tipo de Comprobante
               </Label>
-              <Input 
-                type="number"
-                placeholder="Ej: 1"
-                value={numberingRangeId}
-                onChange={(e) => setNumberingRangeId(e.target.value)}
-                className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all"
-              />
+              <Select value={numberingRangeId} onValueChange={setNumberingRangeId}>
+                <SelectTrigger className="h-12 rounded-[1.5rem] border-none bg-[#E2E4E9] px-4 focus:ring-0 text-[#333333] transition-all">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-none shadow-xl bg-white/95 backdrop-blur-md">
+                  <SelectItem value="8" className="rounded-xl focus:bg-[#E2E4E9]/50 cursor-pointer">
+                    Factura de venta
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-xs font-bold uppercase tracking-wider text-[#666666]">
@@ -583,6 +591,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
                 className="rounded-[1.5rem] h-12 border-none bg-white px-4 focus-visible:ring-2 focus-visible:ring-[#1F7AE0]/30 text-[#333333] transition-all text-sm shadow-sm"
               />
             </div>

@@ -9,14 +9,14 @@ import { Customer } from '../customer/entities/customer.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 export const ColombianMunicipalitiesDivipola: Record<string, string> = {
-  '1': '11001', // Bogotá
-  '2': '05001', // Medellín
-  '3': '76001', // Cali
-  '4': '08001', // Barranquilla
-  '5': '13001', // Cartagena
-  '6': '68001', // Bucaramanga
-  '7': '66001', // Pereira
-  '8': '66170', // Dosquebradas
+  '1': '169', // Bogotá
+  '2': '80', // Medellín
+  '3': '862', // Cali
+  '4': '147', // Barranquilla
+  '5': '178', // Cartagena
+  '6': '919', // Bucaramanga
+  '7': '906', // Pereira
+  '8': '900', // Dosquebradas
 };
 
 export interface FactusCustomer {
@@ -55,6 +55,7 @@ export interface FactusPayload {
   payment_due_date?: string;
   payment_method_code: string;
   operation_type: number;
+  send_email: boolean;
   billing_period: {
     start_date: string;
     start_time: string;
@@ -83,13 +84,14 @@ export class FactusMapperService {
   private getDivipolaCode(internalId: string | number): string {
     const code = ColombianMunicipalitiesDivipola[String(internalId)];
     if (!code) {
-      throw new BadRequestException('Municipio no soportado o código DIVIPOLA faltante');
+      throw new BadRequestException('Municipio no soportado o código territorial faltante');
     }
     return code;
   }
 
+  // Intervención Crítica: Destrucción de la mutación de padding
   private formatDivipolaCode(code: string | number): string {
-    return String(code).padStart(5, '0');
+    return String(code);
   }
 
   private toSnakeCase(str: string): string {
@@ -178,8 +180,8 @@ export class FactusMapperService {
     rawPayload.payment_form = String(invoiceSnapshot.payment_form || invoiceSnapshot.paymentForm);
     rawPayload.payment_method_code = String(invoiceSnapshot.payment_method_code || invoiceSnapshot.paymentMethodCode);
     
-    // Inyección obligatoria de control fiscal
     rawPayload.operation_type = 10;
+    rawPayload.send_email = false; // Inyección de control de entrega
 
     if (rawPayload.payment_form === '2') {
       const dueDate = invoiceSnapshot.payment_due_date || invoiceSnapshot.paymentDueDate;
@@ -199,7 +201,9 @@ export class FactusMapperService {
       const customerData = this.mapKeysToSnakeCase(invoiceSnapshot.customer);
       const internalMunicipalityId = invoiceSnapshot.customer.municipality_id || invoiceSnapshot.customer.municipalityId;
       
-      // Coerción forzosa de tipos (Defensa contra el rechazo 422)
+      // Purga forzosa de la llave interna
+      delete customerData.id;
+
       rawPayload.customer = {
         ...customerData,
         identification: String(invoiceSnapshot.customer.identification),
@@ -207,7 +211,7 @@ export class FactusMapperService {
         identification_document_id: String(invoiceSnapshot.customer.identification_document_id || 3),
         legal_organization_id: String(invoiceSnapshot.customer.legal_organization_id || 2),
         tribute_id: String(invoiceSnapshot.customer.tribute_id || 21),
-        municipality_id: String(this.formatDivipolaCode(this.getDivipolaCode(internalMunicipalityId))),
+        municipality_id: this.formatDivipolaCode(this.getDivipolaCode(internalMunicipalityId)),
       };
     }
 
@@ -224,7 +228,7 @@ export class FactusMapperService {
         is_excluded: 0,
         tribute_id: 1,
         withholding_taxes: [],
-        scheme_id: "1", // Inyección de esquema obligatoria
+        scheme_id: "1", 
       }));
     }
 
@@ -239,10 +243,9 @@ export class FactusMapperService {
       address: bsConfig.address,
       phone_number: String(bsConfig.phone),
       email: bsConfig.email,
-      municipality_id: String(this.formatDivipolaCode(this.getDivipolaCode(bsConfig.municipalityId))),
+      municipality_id: this.formatDivipolaCode(this.getDivipolaCode(bsConfig.municipalityId)),
     };
 
-    // Retorno crudo. El bypass del DTO previene la destrucción del formato.
     return rawPayload as FactusPayload;
   }
 }

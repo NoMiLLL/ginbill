@@ -18,7 +18,7 @@ export class Invoice {
     type: 'int',
     name: 'numbering_range_id',
     nullable: false,
-    default: 1,
+    default: 8,
   })
   numberingRangeId: number;
 
