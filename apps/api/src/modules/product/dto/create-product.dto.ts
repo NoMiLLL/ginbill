@@ -1,8 +1,10 @@
 import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   MaxLength,
@@ -19,6 +21,15 @@ export class CreateProductDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   price: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  taxRate?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isExcluded?: boolean;
 
   @IsInt()
   @Min(1)

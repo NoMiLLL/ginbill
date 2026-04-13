@@ -47,7 +47,7 @@ export default function LoginForm() {
         method: "POST",
         body: JSON.stringify(data),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
 
@@ -56,52 +56,52 @@ export default function LoginForm() {
 
         if (token) {
 
-            localStorage.setItem("token", token);
-            document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
-            
-            // Redirigir al dashboard protegido
-            router.push("/dashboard");
-          } else {
-            console.error("El backend no devolvió un token dándole un formato válido (esperado: result.access_token o result.token)");
-            setErrorMsg("Error interno: No se recibió token de sesión.");
-          }
+          localStorage.setItem("token", token);
+          document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
+
+          // Redirigir al dashboard protegido
+          router.push("/dashboard");
         } else {
+          console.error("El backend no devolvió un token dándole un formato válido (esperado: result.access_token o result.token)");
+          setErrorMsg("Error interno: No se recibió token de sesión.");
+        }
+      } else {
         const errorData = await response.json().catch(() => null);
         console.error("Login failed", errorData);
         if (errorData?.message) {
-            setErrorMsg(errorData.message);
+          setErrorMsg(errorData.message);
         } else if (response.status === 401 || response.status === 403) {
-            setErrorMsg("Credenciales incorrectas.");
+          setErrorMsg("Credenciales incorrectas.");
         } else {
-            setErrorMsg("Ocurrió un error al iniciar sesión.");
+          setErrorMsg("Ocurrió un error al iniciar sesión.");
         }
       }
     } catch (error) {
-        console.error("Error during login", error);
-        setErrorMsg("No se pudo conectar con el servidor.");
-      } finally {
-        setIsLoading(false);
+      console.error("Error during login", error);
+      setErrorMsg("No se pudo conectar con el servidor.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</FormLabel>
+              <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Correo Electrónico</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="tucorreo@ejemplo.com" 
-                  autoComplete="email" 
-                  className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" 
-                  {...field} 
+                <Input
+                  placeholder="tucorreo@ejemplo.com"
+                  autoComplete="email"
+                  className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner"
+                  {...field}
                 />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
             </FormItem>
           )}
         />
@@ -110,18 +110,18 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Contraseña</FormLabel>
+              <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Contraseña</FormLabel>
               <FormControl>
-                <Input 
-                  type="password" 
-                  placeholder="••••••••" 
+                <Input
+                  type="password"
+                  placeholder="••••••••"
                   autoComplete="current-password"
-                  className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" 
-                  {...field} 
+                  className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner"
+                  {...field}
                 />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
-                </FormItem>
+              <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
+            </FormItem>
           )}
         />
 
@@ -130,10 +130,10 @@ export default function LoginForm() {
                 {errorMsg}
             </div>
         )}
-        
-        <Button 
-          type="submit" 
-          className="w-full h-12 rounded-[1.5rem] bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all text-md font-medium mt-6 active:scale-[0.98]" 
+
+        <Button
+          type="submit"
+          className="w-full h-12 rounded-[var(--radius)] bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all text-base font-semibold mt-4 active:scale-[0.98]"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -142,7 +142,7 @@ export default function LoginForm() {
               Ingresando...
             </>
           ) : (
-            "Ingresar"
+            "Ingresar a mi cuenta"
           )}
         </Button>
       </form>

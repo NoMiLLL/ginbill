@@ -27,10 +27,10 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     });
 
     if (response.status === 401) {
-      console.warn("Sesión expirada detectada por el servidor (401)");
+      console.warn("Sesión expirada detectada (401)");
       localStorage.removeItem("token");
-      if (typeof window !== "undefined") {
-        window.location.href = "/?expired=true";
+      if (typeof window !== "undefined" && !fullUrl.includes("/auth/")) {
+        window.location.href = "/login?expired=true";
       }
       return response;
     }

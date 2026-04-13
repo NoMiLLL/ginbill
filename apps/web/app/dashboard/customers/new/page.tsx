@@ -55,13 +55,13 @@ export default function NewCustomerPage() {
     setIsLoading(true);
     setSuccessMsg("");
     setErrorMsg("");
-    
+
     try {
       const response = await fetchWithAuth("/customer", {
         method: "POST",
         body: JSON.stringify(data),
       });
-      
+
       if (response.ok) {
         setSuccessMsg("Cliente creado exitosamente.");
         setTimeout(() => {
@@ -95,14 +95,14 @@ export default function NewCustomerPage() {
       <div className="rounded-[2rem] neo-glass p-8 shadow-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
+
             {/* Sección: Información Fiscal */}
             <div>
               <div className="flex items-center gap-2 mb-4 border-b border-border/50 pb-2">
                 <Building className="h-5 w-5 text-primary" strokeWidth={1.5} />
                 <h2 className="text-lg font-semibold text-[#1E293B]">Información Fiscal</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -169,7 +169,7 @@ export default function NewCustomerPage() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="municipalityId"
@@ -210,15 +210,15 @@ export default function NewCustomerPage() {
             </div>
 
             {errorMsg && (
-                <div className="p-3 mt-4 text-sm font-medium text-[#991B1B] bg-[#FEE2E2] rounded-lg border border-[#991B1B]/10">
+                <div className="p-3 mt-4 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md animate-in zoom-in-95">
                     {Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg}
                 </div>
             )}
 
             {successMsg && (
-                <div className="p-3 mt-4 text-sm font-medium text-[#166534] bg-[#DCFCE7] rounded-lg border border-[#166534]/10">
-                    {successMsg}
-                </div>
+              <div className="p-3 mt-4 text-sm font-medium text-[#166534] bg-[#DCFCE7] rounded-lg border border-[#166534]/10">
+                {successMsg}
+              </div>
             )}
 
             <div className="pt-6 flex justify-end gap-3 border-t border-border/50 mt-8">

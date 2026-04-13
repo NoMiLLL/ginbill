@@ -18,12 +18,35 @@ export class Product {
   })
   name: string;
 
+  /**
+   * ADVERTENCIA DE MIGRACIÓN:
+   * Al implementar el modelo "Tax Exclusive", es necesario ejecutar un script SQL 
+   * para dividir los precios actuales entre (1 + taxRate/100) si se desea 
+   * mantener el precio final histórico al público.
+   * Ejemplo: UPDATE product SET price = price / 1.19;
+   */
   @Column({
     type: 'decimal',
-    precision: 10,
-    scale: 2,
+    precision: 12,
+    scale: 4,
   })
   price: number;
+
+  @Column({
+    name: 'tax_rate',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 19.00,
+  })
+  taxRate: number;
+
+  @Column({
+    name: 'is_excluded',
+    type: 'boolean',
+    default: false,
+  })
+  isExcluded: boolean;
 
   @Column({
     name: 'units_of_measurement',

@@ -13,22 +13,22 @@ export default function AuthTabs() {
   }, []);
 
   if (!isMounted) {
-    return <div className="w-full max-w-md mx-auto h-[400px] rounded-[2rem] neo-glass p-8 shadow-2xl animate-pulse" />;
+    return <div className="w-full h-[400px] animate-pulse rounded-[var(--radius)] bg-secondary/30" />;
   }
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-[2rem] neo-glass p-8 shadow-2xl">
-      <div className="mb-6 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-[#333333]">Bienvenido a Billgin</h2>
-        <p className="text-[#666666] mt-1 text-sm">
-          Ingresa a tu cuenta o regístrate para comenzar a facturar.
+    <div className="w-full animate-in fade-in duration-500">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-extrabold tracking-tight text-foreground">Bienvenido a Billgin</h2>
+        <p className="text-muted-foreground mt-2 text-[15px]">
+          Ingresa a tu cuenta o regístrate para comenzar a facturar con la DIAN de inmediato.
         </p>
       </div>
       
       <Tabs defaultValue="login" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-gray-100 rounded-[1.5rem] p-1">
-          <TabsTrigger value="login" className="h-full text-base rounded-full font-medium data-[state=active]:bg-white data-[state=active]:text-[#333333] data-[state=active]:shadow-sm transition-all">Iniciar Sesión</TabsTrigger>
-          <TabsTrigger value="register" className="h-full text-base rounded-full font-medium data-[state=active]:bg-white data-[state=active]:text-[#333333] data-[state=active]:shadow-sm transition-all">Registrarse</TabsTrigger>
+        <TabsList className="w-full flex items-center mb-8 bg-black/5 dark:bg-white/10 p-1.5 rounded-[var(--radius)] shadow-inner border-0">
+          <TabsTrigger value="login" className="flex-1 flex items-center justify-center px-4 py-3.5 text-[17px] leading-none !rounded-[calc(var(--radius)-6px)] font-bold data-[state=active]:!bg-white dark:data-[state=active]:!bg-background data-[state=active]:!text-foreground data-[state=active]:!shadow-md hover:!text-foreground transition-all !border-0 focus-visible:!ring-0">Iniciar Sesión</TabsTrigger>
+          <TabsTrigger value="register" className="flex-1 flex items-center justify-center px-4 py-3.5 text-[17px] leading-none !rounded-[calc(var(--radius)-6px)] font-bold data-[state=active]:!bg-white dark:data-[state=active]:!bg-background data-[state=active]:!text-foreground data-[state=active]:!shadow-md hover:!text-foreground transition-all !border-0 focus-visible:!ring-0">Registrarse</TabsTrigger>
         </TabsList>
         
         <TabsContent value="login" className="animate-in fade-in-50 zoom-in-95 duration-300">

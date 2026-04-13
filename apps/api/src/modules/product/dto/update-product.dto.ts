@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -22,6 +23,15 @@ export class UpdateProductDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   price?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  taxRate?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isExcluded?: boolean;
 
   @IsOptional()
   @IsInt()

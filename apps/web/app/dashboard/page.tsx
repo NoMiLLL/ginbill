@@ -267,8 +267,8 @@ export default function DashboardPage() {
                       </tr>
                     ) : (
                       recentInvoices.map((invoice, index) => (
-                        <tr key={invoice.id} className="hover:neo-surface-sm transition-all duration-300 group">
-                          <td className="px-8 py-5 font-medium text-[#333333]">#INV-{invoice.id.toString().padStart(4, '0')}</td>
+                        <tr key={invoice.id || `invoice-${index}`} className="hover:neo-surface-sm transition-all duration-300 group">
+                          <td className="px-8 py-5 font-medium text-[#333333]">#INV-{(invoice.id ?? (index + 1)).toString().padStart(4, '0')}</td>
                           <td className="px-8 py-5 text-[#666666] group-hover:text-[#333333] transition-colors">{invoice.customer.names}</td>
                           <td className="px-8 py-5 text-[#666666]">{new Date(invoice.createdAt).toLocaleDateString()}</td>
                           <td className="px-8 py-5 text-right font-semibold text-[#1F7AE0]">{currency.format(invoice.total)}</td>

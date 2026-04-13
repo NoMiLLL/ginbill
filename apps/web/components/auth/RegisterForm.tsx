@@ -48,7 +48,7 @@ export default function RegisterForm() {
       phone: "",
       email: "",
       password: "",
-      municipalityId: undefined, 
+      municipalityId: undefined,
     },
   });
 
@@ -56,148 +56,148 @@ export default function RegisterForm() {
     setIsLoading(true);
     setSuccessMsg("");
     setErrorMsg("");
-    
+
     try {
       const response = await fetchWithAuth("/auth/register", {
         method: "POST",
         body: JSON.stringify(data),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         setSuccessMsg("¡Registro exitoso! Ya puedes iniciar sesión.");
         form.reset();
-        
+
 
         setTimeout(() => {
-            window.location.reload();
+          window.location.reload();
         }, 2000);
       } else {
         const errorData = await response.json();
-        
+
         if (errorData.message) {
-            if (Array.isArray(errorData.message)) {
-                
-                console.error("Validation failed in backend:", errorData.message);
-                setErrorMsg(errorData.message.join(", "));
-            } else {
-                
-                setSuccessMsg("");
-                setErrorMsg(errorData.message); 
-            }
+          if (Array.isArray(errorData.message)) {
+
+            console.error("Validation failed in backend:", errorData.message);
+            setErrorMsg(errorData.message.join(", "));
+          } else {
+
+            setSuccessMsg("");
+            setErrorMsg(errorData.message);
+          }
         } else {
-            setErrorMsg("Ocurrió un error al intentar registrarte.");
+          setErrorMsg("Ocurrió un error al intentar registrarte.");
         }
       }
     } catch (error) {
-        console.error("Network error during register", error);
-        setErrorMsg("Error de red al intentar registrarte.");
-      } finally {
-        setIsLoading(false);
+      console.error("Network error during register", error);
+      setErrorMsg("Error de red al intentar registrarte.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        
+
         {/* Nombre */}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Nombre Completo</FormLabel>
+              <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Nombre Completo</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. Juan Pérez" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
+                <Input placeholder="Ej. Juan Pérez" className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner" {...field} />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
             </FormItem>
           )}
         />
 
-        {}
+        { }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
+          <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-                <FormItem>
-                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Correo Electrónico</FormLabel>
+              <FormItem>
+                <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Correo Electrónico</FormLabel>
                 <FormControl>
-                    <Input placeholder="tucorreo@ejemplo.com" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
+                  <Input placeholder="tucorreo@ejemplo.com" className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
-                </FormItem>
+                <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
+              </FormItem>
             )}
-            />
+          />
 
-            <FormField
+          <FormField
             control={form.control}
             name="phone"
             render={({ field }) => (
-                <FormItem>
-                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Teléfono Celular</FormLabel>
+              <FormItem>
+                <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Teléfono Celular</FormLabel>
                 <FormControl>
-                    <Input placeholder="Ej. 3001234567" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
+                  <Input placeholder="Ej. 3001234567" className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
-                </FormItem>
+                <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
+              </FormItem>
             )}
-            />
+          />
         </div>
 
-        {}
+        { }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
+          <FormField
             control={form.control}
             name="address"
             render={({ field }) => (
-                <FormItem>
-                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Dirección Física</FormLabel>
+              <FormItem>
+                <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Dirección Física</FormLabel>
                 <FormControl>
-                    <Input placeholder="Ej. Calle 100 # 20 - 30" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
+                  <Input placeholder="Ej. Calle 100 # 20 - 30" className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner" {...field} />
                 </FormControl>
-                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
-                </FormItem>
+                <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
+              </FormItem>
             )}
-            />
+          />
 
-            <FormField
+          <FormField
             control={form.control}
             name="municipalityId"
             render={({ field }) => (
-                <FormItem>
-                <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Municipio / Ciudad</FormLabel>
+              <FormItem>
+                <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Municipio / Ciudad</FormLabel>
                 <Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={field.value ? field.value.toString() : undefined}>
-                    <FormControl>
-                    <SelectTrigger className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus:ring-0 text-[#333333] transition-all">
-                        <SelectValue placeholder="Selecciona una ciudad..." />
+                  <FormControl>
+                    <SelectTrigger className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus:ring-2 focus:ring-primary text-foreground transition-all shadow-inner">
+                      <SelectValue placeholder="Selecciona una ciudad..." />
                     </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="rounded-2xl border-none shadow-xl bg-white/95 backdrop-blur-md">
-                        {MUNICIPALITIES.map((mun) => (
-                            <SelectItem key={mun.id} value={mun.id.toString()} className="rounded-xl focus:bg-[#E2E4E9]/50 cursor-pointer">{mun.name}</SelectItem>
-                        ))}
-                    </SelectContent>
+                  </FormControl>
+                  <SelectContent className="rounded-2xl border-none shadow-xl bg-white/95 backdrop-blur-md">
+                    {MUNICIPALITIES.map((mun) => (
+                      <SelectItem key={mun.id} value={mun.id.toString()} className="rounded-xl focus:bg-[#E2E4E9]/50 cursor-pointer">{mun.name}</SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
-                <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
-                </FormItem>
+                <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
+              </FormItem>
             )}
-            />
+          />
         </div>
 
-        {}
+        { }
         <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Contraseña</FormLabel>
+              <FormLabel className="text-[15px] font-semibold text-foreground ml-1">Contraseña</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" className="rounded-[1.5rem] h-12 border-none bg-[#E2E4E9] px-4 focus-visible:ring-0 text-[#333333] transition-all" {...field} />
+                <Input type="password" placeholder="••••••••" className="rounded-[var(--radius)] h-12 border-none bg-secondary/80 px-4 focus-visible:ring-2 focus-visible:ring-primary text-foreground transition-all shadow-inner" {...field} />
               </FormControl>
-              <FormMessage className="animate-in slide-in-from-top-1 ml-2 text-sm text-[#FF4545] font-medium" />
+              <FormMessage className="animate-in slide-in-from-top-1 ml-1 text-sm text-destructive font-medium" />
             </FormItem>
           )}
         />
@@ -208,14 +208,14 @@ export default function RegisterForm() {
         )}
 
         {successMsg && (
-            <div className="p-3 mt-4 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-md animate-in zoom-in-95">
-                {successMsg}
-            </div>
+          <div className="p-3 mt-4 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-md animate-in zoom-in-95">
+            {successMsg}
+          </div>
         )}
 
-        <Button 
-          type="submit" 
-          className="w-full h-12 rounded-[1.5rem] bg-[#1F7AE0] hover:bg-[#1A6DD0] text-white shadow-lg shadow-[#1F7AE0]/30 transition-all text-md font-medium mt-6 active:scale-[0.98]" 
+        <Button
+          type="submit"
+          className="w-full h-12 rounded-[var(--radius)] bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all text-base font-semibold mt-6 active:scale-[0.98]"
           disabled={isLoading}
         >
           {isLoading ? (

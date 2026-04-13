@@ -15,6 +15,8 @@ type Product = {
   name: string;
   price: number;
   referenceCode: string;
+  taxRate: number;
+  isExcluded: boolean;
 };
 
 type Customer = {
@@ -164,18 +166,30 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
       selectedProducts.reduce(
         (sum, product) => {
             const detail = items[product.id];
-            const subtotal = product.price * detail.quantity;
-            const discount = subtotal * (detail.discount_rate / 100);
-            return sum + (subtotal - discount);
+            const priceBase = Number(product.price);
+            const quantity = detail.quantity;
+            const taxRate = Number(detail.tax_rate);
+            
+            const subtotal = priceBase * quantity;
+            const taxAmount = subtotal * (taxRate / 100);
+            
+            return sum + subtotal + taxAmount;
         },
         0
       ),
     [selectedProducts, items]
   );
 
-  const updateItemDetail = (productId: number, partial: Partial<InvoiceItemDetails>) => {
+  const updateItemDetail = (productId: number, partial: Partial<InvoiceItemDetails>, productInfo?: Product) => {
     const prevItems = items || {};
-    const current = prevItems[productId] || { quantity: 0, tax_rate: 19, tax_name: "IVA", discount_rate: 0 };
+    const current = prevItems[productId] || { 
+      quantity: 0, 
+      tax_rate: productInfo?.taxRate ?? 19, 
+      is_excluded: productInfo?.isExcluded ?? false,
+      tax_name: "IVA", 
+      discount_rate: 0,
+      unit_price: productInfo?.price ?? 0
+    };
     
     const nextValue = { ...current, ...partial };
     
@@ -187,9 +201,9 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
     }
   };
 
-  const adjustQuantity = (productId: number, delta: number) => {
-    const currentQty = items[productId]?.quantity ?? 0;
-    updateItemDetail(productId, { quantity: Math.max(0, currentQty + delta) });
+  const adjustQuantity = (product: Product, delta: number) => {
+    const currentQty = items[product.id]?.quantity ?? 0;
+    updateItemDetail(product.id, { quantity: Math.max(0, currentQty + delta) }, product);
   };
 
   const handleEmitInvoice = async () => {
@@ -437,18 +451,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                       </div>
 
                       {isSelected && (
-                        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="flex flex-col gap-1.5">
-                            <Label className="text-[10px] font-bold uppercase text-[#666666] flex items-center gap-1">
-                              <Percent className="h-3 w-3" /> Impuesto (%)
-                            </Label>
-                            <Input 
-                              type="number"
-                              value={itemDetail.tax_rate}
-                              onChange={(e) => updateItemDetail(product.id, { tax_rate: Number(e.target.value) })}
-                              className="h-9 rounded-xl border-none bg-white px-3 focus-visible:ring-1 focus-visible:ring-[#1F7AE0] text-xs font-bold"
-                            />
-                          </div>
+                        <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
                           <div className="flex flex-col gap-1.5">
                             <Label className="text-[10px] font-bold uppercase text-[#666666] flex items-center gap-1">
                                <Tag className="h-3 w-3" /> Descuento (%)
@@ -469,7 +472,7 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                             type="button"
                             variant="outline"
                             className="h-9 w-9 rounded-xl border-none bg-[#E2E4E9] text-[#333333] hover:bg-[#D4D6DC] p-0 font-bold text-lg active:scale-90 transition-all"
-                            onClick={() => adjustQuantity(product.id, -1)}
+                            onClick={() => adjustQuantity(product, -1)}
                             disabled={quantity === 0 || !selectedCustomerId || isEmitting}
                           >
                             -
@@ -481,16 +484,19 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                             type="button"
                             variant="outline"
                             className="h-9 w-9 rounded-xl border-none bg-[#1F7AE0] text-white hover:bg-[#1A6DD0] p-0 font-bold text-lg active:scale-90 transition-all"
-                            onClick={() => adjustQuantity(product.id, 1)}
+                            onClick={() => adjustQuantity(product, 1)}
                             disabled={!selectedCustomerId || isEmitting}
                           >
                             +
                           </Button>
                         </div>
                         {isSelected && (
-                            <span className="text-sm font-black text-[#1F7AE0]">
-                            {currency.format((product.price * quantity) * (1 - itemDetail.discount_rate / 100))}
-                            </span>
+                            <div className="flex flex-col items-end">
+                              <span className="text-[10px] text-[#666666] font-medium">Subtotal: {currency.format(product.price * quantity)}</span>
+                              <span className="text-sm font-black text-[#1F7AE0]">
+                                {currency.format((product.price * quantity) * (1 + itemDetail.tax_rate / 100))}
+                              </span>
+                            </div>
                         )}
                       </div>
                     </div>
@@ -516,7 +522,8 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
               selectedProducts.map((product) => {
                 const detail = items[product.id];
                 const subtotal = product.price * detail.quantity;
-                const discounted = subtotal * (1 - detail.discount_rate / 100);
+                const tax = subtotal * (detail.tax_rate / 100);
+                const totalItem = subtotal + tax;
                 return (
                   <div
                     key={product.id}
@@ -530,15 +537,13 @@ export default function ProductCartCard({ tabId, onSuccess }: { tabId: string; o
                         <span className="text-[10px] bg-[#E2E4E9] px-2 py-0.5 rounded-full font-bold text-[#666666]">
                             {detail.quantity} Unidades
                         </span>
-                        {detail.discount_rate > 0 && (
-                            <span className="text-[10px] bg-emerald-100 px-2 py-0.5 rounded-full font-bold text-emerald-700">
-                                -{detail.discount_rate}% Desc
-                            </span>
-                        )}
+                        <span className="text-[10px] bg-blue-100 px-2 py-0.5 rounded-full font-bold text-blue-700">
+                            +{detail.tax_rate}% IVA
+                        </span>
                       </div>
                     </div>
                     <p className="text-sm font-black text-[#1F7AE0]">
-                      {currency.format(discounted)}
+                      {currency.format(totalItem)}
                     </p>
                   </div>
                 );

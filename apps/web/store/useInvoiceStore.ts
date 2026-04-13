@@ -4,8 +4,10 @@ import { persist } from 'zustand/middleware';
 export interface InvoiceItemDetails {
   quantity: number;
   tax_rate: number;
+  is_excluded: boolean;
   tax_name: string;
   discount_rate: number;
+  unit_price: number;
 }
 
 export interface InvoiceDraft {

@@ -19,6 +19,12 @@ export class ResponseProductDto {
   @Expose()
   referenceCode: string;
 
+  @Expose()
+  taxRate: number;
+
+  @Expose()
+  isExcluded: boolean;
+
   constructor(partial: Partial<ResponseProductDto>) {
     Object.assign(this, partial);
   }

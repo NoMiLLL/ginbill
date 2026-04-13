@@ -22,9 +22,11 @@ import { fetchWithAuth } from "@/lib/api";
 const productSchema = z.object({
   name: z.string().min(2, "El nombre es requerido").max(150),
   price: z.coerce.number().positive("El precio debe ser mayor a 0"),
-  unitsOfMeasurement: z.coerce.number().min(1, "Unidad de medida requerida"),
-  codigoEstandar: z.coerce.number().min(1, "Código estándar requerido"),
+  unitsOfMeasurement: z.coerce.number().min(0, "La unidad de medida no puede ser negativa"),
+  codigoEstandar: z.coerce.number().min(0, "El código estándar no puede ser negativa"),
   referenceCode: z.string().min(1, "Código de referencia requerido").max(50),
+  taxRate: z.coerce.number().min(0, "La tasa de impuesto no puede ser negativa").default(19),
+  isExcluded: z.boolean().default(false),
 });
 
 type ProductValues = z.infer<typeof productSchema>;
@@ -35,7 +37,6 @@ export default function NewProductPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // We define a flexible type for the initial form state because HTML inputs work with empty strings
   const form = useForm<z.input<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -44,6 +45,8 @@ export default function NewProductPage() {
       unitsOfMeasurement: "" as unknown as number,
       codigoEstandar: "" as unknown as number,
       referenceCode: "",
+      taxRate: 19,
+      isExcluded: false,
     },
   });
 
@@ -51,13 +54,13 @@ export default function NewProductPage() {
     setIsLoading(true);
     setSuccessMsg("");
     setErrorMsg("");
-    
+
     try {
       const response = await fetchWithAuth("/product", {
         method: "POST",
         body: JSON.stringify(data),
       });
-      
+
       if (response.ok) {
         setSuccessMsg("Producto creado exitosamente.");
         setTimeout(() => {
@@ -91,7 +94,7 @@ export default function NewProductPage() {
       <div className="rounded-[2rem] neo-glass p-8 shadow-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            
+
             <FormField
               control={form.control}
               name="name"
@@ -139,18 +142,61 @@ export default function NewProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
-                name="unitsOfMeasurement"
+                name="taxRate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Unidad de Medida</FormLabel>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Tasa de Impuesto (%)</FormLabel>
                     <FormControl>
-                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" placeholder="Ej. 1 (Unidades)" {...field} value={field.value as number | string} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" step="0.01" placeholder="Ej. 19.00" {...field} value={field.value as number | string} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
+
+              <FormField
+                control={form.control}
+                name="isExcluded"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">¿IVA Excluido?</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-3 px-2 h-12">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={field.value}
+                            onChange={field.onChange}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1F7AE0]"></div>
+                        </label>
+                        <span className="text-sm font-medium text-[#666666]">
+                          {field.value ? "Sí, el producto está excluido de IVA" : "No, aplicar tasa de IVA"}
+                        </span>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="unitsOfMeasurement"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Unidad de Medida</FormLabel>
+                    <FormControl>
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" min="0" placeholder="Ej. 1 (Unidades)" {...field} value={field.value as number | string} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="codigoEstandar"
@@ -158,7 +204,7 @@ export default function NewProductPage() {
                   <FormItem>
                     <FormLabel className="text-sm font-semibold text-[#333333] ml-2">Código Estándar</FormLabel>
                     <FormControl>
-                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" placeholder="Ej. 99" {...field} value={field.value as number | string} />
+                      <Input className="rounded-lg h-12 border border-border/50 bg-background px-4 focus-visible:ring-0 text-[#333333]" type="number" min="0" placeholder="Ej. 99" {...field} value={field.value as number | string} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,15 +213,15 @@ export default function NewProductPage() {
             </div>
 
             {errorMsg && (
-                <div className="p-3 mt-4 text-sm font-medium text-destructive bg-destructive/10 rounded-md">
+                <div className="p-3 mt-4 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md animate-in zoom-in-95">
                     {Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg}
                 </div>
             )}
 
             {successMsg && (
-                <div className="p-3 mt-4 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-md">
-                    {successMsg}
-                </div>
+              <div className="p-3 mt-4 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-md">
+                {successMsg}
+              </div>
             )}
 
             <div className="pt-6 flex justify-end gap-4 mt-8">
