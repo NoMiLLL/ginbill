@@ -142,7 +142,7 @@ export default function LoginForm() {
               Ingresando...
             </>
           ) : (
-            "Ingresar a mi cuenta"
+            "Ingresar a la demo"
           )}
         </Button>
       </form>
